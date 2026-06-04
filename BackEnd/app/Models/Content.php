@@ -8,6 +8,7 @@ class Content extends Model
 {
     use HasFactory;
 
+
     protected $fillable = ['user_id','category_id','title','body','status','updated_by'];
 
     public function user()
@@ -30,3 +31,4 @@ class Content extends Model
         return $this->hasOne(PublishedContent::class);
     }
 }
+
