@@ -6,11 +6,11 @@ use OpenApi\Attributes as OA;
 
 #[OA\Info(
     version: "1.0.0",
-    title: "Integrity Eye API",
+    title: "Zurqa Al-Yamama API",
     description: "API Documentation"
 )]
 #[OA\Server(
-    url: "http://localhost:8000",
-    description: "Local Server"
+    url: "https://zurqa-al-yamama.onrender.com",
+    description: "Production Server"
 )]
 class OpenApi {}
