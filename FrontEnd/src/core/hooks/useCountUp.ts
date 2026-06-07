@@ -5,6 +5,7 @@ export type UseCountUpOptions = {
   decimals?: number;
   enabled?: boolean;
   threshold?: number;
+  startOnMount?: boolean;
 };
 
 export function useCountUp(
@@ -14,15 +15,21 @@ export function useCountUp(
     decimals = 0,
     enabled = true,
     threshold = 0.2,
+    startOnMount = false,
   }: UseCountUpOptions = {},
 ) {
   const [value, setValue] = useState(enabled ? 0 : target);
-  const [hasStarted, setHasStarted] = useState(false);
+  const [hasStarted, setHasStarted] = useState(startOnMount && enabled);
   const ref = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (!enabled) {
       setValue(target);
+      return;
+    }
+
+    if (startOnMount) {
+      setHasStarted(true);
       return;
     }
 
@@ -41,7 +48,7 @@ export function useCountUp(
 
     observer.observe(el);
     return () => observer.disconnect();
-  }, [enabled, target, threshold]);
+  }, [enabled, target, threshold, startOnMount]);
 
   useEffect(() => {
     if (!enabled) return;

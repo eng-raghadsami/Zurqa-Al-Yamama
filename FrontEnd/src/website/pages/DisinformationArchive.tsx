@@ -8,6 +8,8 @@ import type {
 import AnimatedStatNumber, {
   AnimatedStatProgress,
 } from "@shared/components/AnimatedStatNumber";
+import RevealOnScroll from "@shared/components/RevealOnScroll";
+import { StaggerReveal } from "@shared/components/animations";
 import {
   ARCHIVE_PAGE,
   ARCHIVE_STATS,
@@ -50,11 +52,11 @@ function CaseStatusBadge({ status }: { status: ArchiveCaseStatus }) {
 
 function CaseCard({ item }: { item: DisinformationCase }) {
   return (
-    <article className="group bg-surface-container-lowest rounded-xl overflow-hidden border border-outline-variant/20 shadow-sm hover:shadow-xl hover:-translate-y-2 transition-all duration-300">
+    <article className="group bg-surface-container-lowest rounded-xl overflow-hidden border border-outline-variant/20 shadow-sm site-card-hover">
       <div className="relative aspect-[16/9] overflow-hidden">
         <img
           alt={item.imageAlt}
-          className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+          className="w-full h-full object-cover site-card-image"
           src={item.image}
           loading="lazy"
         />
@@ -92,7 +94,7 @@ function CaseCard({ item }: { item: DisinformationCase }) {
         <div className="flex flex-row-reverse gap-3">
           <button
             type="button"
-            className="flex-1 py-3 bg-primary text-on-primary text-xs font-label-bold rounded-lg hover:bg-primary-container transition-all"
+            className="flex-1 py-3 bg-primary text-on-primary text-xs font-label-bold rounded-lg hover:bg-primary-container transition-all site-btn-shine"
           >
             عرض التفاصيل
           </button>
@@ -198,21 +200,26 @@ export default function DisinformationArchive() {
         <div className="archive-radar-line" style={{ top: "50%" }} />
       </div>
 
-      <header className="mb-10 text-right relative z-10">
-        <h2 className="font-headline-md text-headline-md text-primary mb-2">
-          {ARCHIVE_PAGE.title}
-        </h2>
-        <p className="text-on-surface-variant font-body-lg text-body-lg max-w-2xl">
-          {ARCHIVE_PAGE.description}
-        </p>
-      </header>
+      <RevealOnScroll direction="up" className="mb-10 text-right relative z-10">
+        <header>
+          <h2 className="font-headline-md text-headline-md text-primary mb-2 site-section-title site-section-title-visible">
+            {ARCHIVE_PAGE.title}
+          </h2>
+          <p className="text-on-surface-variant font-body-lg text-body-lg max-w-2xl">
+            {ARCHIVE_PAGE.description}
+          </p>
+        </header>
+      </RevealOnScroll>
 
       <section className="grid grid-cols-1 md:grid-cols-3 gap-gutter mb-12 relative z-10">
-        {ARCHIVE_STATS.map((stat) => (
-          <ArchiveStatCard key={stat.id} stat={stat} />
+        {ARCHIVE_STATS.map((stat, index) => (
+          <StaggerReveal key={stat.id} index={index}>
+            <ArchiveStatCard stat={stat} />
+          </StaggerReveal>
         ))}
       </section>
 
+      <RevealOnScroll direction="up" delay={100}>
       <form
         onSubmit={handleSubmit}
         className="glass-panel p-4 rounded-xl mb-6 flex flex-wrap flex-row-reverse items-center gap-4 sticky top-24 z-30 shadow-sm border-outline-variant/10"
@@ -282,7 +289,7 @@ export default function DisinformationArchive() {
         </select>
         <button
           type="submit"
-          className="h-12 px-6 bg-primary text-white rounded-lg font-label-bold flex items-center gap-2 hover:bg-on-surface-variant transition-colors shadow-md"
+          className="h-12 px-6 bg-primary text-white rounded-lg font-label-bold flex items-center gap-2 hover:bg-on-surface-variant transition-colors shadow-md site-btn-shine"
         >
           <span className="material-symbols-outlined text-lg">filter_alt</span>
           تحديث النتائج
@@ -297,6 +304,7 @@ export default function DisinformationArchive() {
           </button>
         )}
       </form>
+      </RevealOnScroll>
 
       <p className="text-sm text-on-surface-variant mb-8 relative z-10 text-right">
         {filteredCases.length === 0
@@ -305,12 +313,15 @@ export default function DisinformationArchive() {
       </p>
 
       <section className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 relative z-10">
-        {filteredCases.map((item) => (
-          <CaseCard key={item.id} item={item} />
+        {filteredCases.map((item, index) => (
+          <StaggerReveal key={item.id} index={index}>
+            <CaseCard item={item} />
+          </StaggerReveal>
         ))}
       </section>
 
       {filteredCases.length > 0 && (
+        <RevealOnScroll direction="up">
         <nav
           className="mt-16 flex justify-center relative z-10"
           aria-label="ترقيم الصفحات"
@@ -365,6 +376,7 @@ export default function DisinformationArchive() {
             </li>
           </ul>
         </nav>
+        </RevealOnScroll>
       )}
     </div>
   );

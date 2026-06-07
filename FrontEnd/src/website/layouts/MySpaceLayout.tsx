@@ -1,3 +1,4 @@
+import { PageEnter } from "@shared/components/animations";
 import { Outlet } from "react-router-dom";
 import TopNav from "@website/components/TopNav";
 import AuthenticatedSidebar from "@website/components/AuthenticatedSidebar";
@@ -12,9 +13,11 @@ export default function MySpaceLayout() {
         avatarSrc={MY_SPACE_NAV_AVATAR}
         hasSidebar
       />
-      <AuthenticatedSidebar belowTopNav />
-      <main className="lg:mr-80 pt-24 md:pt-28 px-4 md:px-margin-desktop pb-24 lg:pb-20">
-        <Outlet />
+      <AuthenticatedSidebar />
+      <main className="relative min-h-[calc(100dvh-5rem)] bg-surface px-4 pb-24 pt-24 md:px-margin-desktop md:pt-28 lg:mr-72 lg:pb-20 xl:mr-80">
+        <PageEnter>
+          <Outlet />
+        </PageEnter>
       </main>
       <SidebarBottomNav />
     </div>

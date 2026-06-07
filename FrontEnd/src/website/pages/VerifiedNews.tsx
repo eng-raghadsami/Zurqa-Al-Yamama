@@ -1,6 +1,12 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { WEBSITE_ROUTES } from "@core/constants/routes";
+import { useCountUp } from "@core/hooks/useCountUp";
+import { useReducedMotion } from "@core/hooks/useReducedMotion";
+import RevealOnScroll from "@shared/components/RevealOnScroll";
+import AnimatedStatNumber from "@shared/components/AnimatedStatNumber";
+import { formatStatValue } from "@shared/helpers/formatStatValue";
+import { EnterItem, StaggerReveal } from "@shared/components/animations";
 import VerifiedNewsImage from "@website/components/VerifiedNewsImage";
 import type {
   NewsCategoryFilter,
@@ -15,6 +21,104 @@ import {
   isFullBentoLayout,
 } from "@website/types/verifiedNews";
 
+function HeaderStatCard({
+  target,
+  label,
+  decimals = 1,
+  prefix,
+  suffix,
+  valueClassName,
+}: {
+  target: number;
+  label: string;
+  decimals?: number;
+  prefix?: string;
+  suffix?: string;
+  valueClassName: string;
+}) {
+  const reducedMotion = useReducedMotion();
+
+  return (
+    <div className="verified-news-stat-card min-w-[9rem] rounded-xl px-4 py-3.5 text-center">
+      <AnimatedStatNumber
+        target={target}
+        decimals={decimals}
+        prefix={prefix}
+        suffix={suffix}
+        duration={2000}
+        enabled={!reducedMotion}
+        startOnMount
+        className={`block font-stats-number text-2xl tabular-nums ${valueClassName}`}
+      />
+          <span className="mt-1 block text-[11px] font-label-bold text-on-surface-variant">
+            {label}
+          </span>
+    </div>
+  );
+}
+
+function IntegrityFloatingPanel() {
+  const reducedMotion = useReducedMotion();
+  const { value: score } = useCountUp(INTEGRITY_DAILY_STATS.score, {
+    decimals: 1,
+    duration: 2200,
+    enabled: !reducedMotion,
+    startOnMount: true,
+  });
+  const { value: change } = useCountUp(INTEGRITY_DAILY_STATS.change, {
+    decimals: 1,
+    duration: 2200,
+    enabled: !reducedMotion,
+    startOnMount: true,
+  });
+  const { value: scannedToday } = useCountUp(INTEGRITY_DAILY_STATS.scannedToday, {
+    duration: 2200,
+    enabled: !reducedMotion,
+    startOnMount: true,
+  });
+
+  const displayScore = reducedMotion ? INTEGRITY_DAILY_STATS.score : score;
+  const displayChange = reducedMotion ? INTEGRITY_DAILY_STATS.change : change;
+  const displayScanned = reducedMotion
+    ? INTEGRITY_DAILY_STATS.scannedToday
+    : scannedToday;
+
+  return (
+    <aside
+      aria-label="مؤشر النزاهة اليومي"
+      className="pointer-events-none fixed bottom-24 left-4 z-50 hidden w-64 xl:block xl:bottom-10 xl:left-8"
+    >
+      <div className="glass-panel pointer-events-auto rounded-2xl border border-white/40 p-5 shadow-2xl">
+        <div className="mb-3 flex items-center justify-between">
+          <span className="font-label-bold text-xs opacity-60">
+            مؤشر النزاهة اليومي
+          </span>
+          <span className="text-gold-metallic-start">✨</span>
+        </div>
+        <div className="mb-2 flex items-end gap-2">
+          <span className="font-stats-number text-stats-number tabular-nums text-primary">
+            {formatStatValue(displayScore, { decimals: 1 })}
+          </span>
+          <span className="mb-1 text-xs font-bold tabular-nums text-success-teal">
+            {formatStatValue(displayChange, {
+              decimals: 1,
+              prefix: "+",
+              suffix: "%",
+            })}
+          </span>
+        </div>
+        <p className="text-[10px] text-on-surface-variant">
+          تم فحص{" "}
+          <span className="font-bold tabular-nums text-on-surface">
+            {formatStatValue(displayScanned, { grouping: true })}
+          </span>{" "}
+          خبر اليوم باستخدام خوارزميات اليمامة.
+        </p>
+      </div>
+    </aside>
+  );
+}
+
 function NewsImage(props: { alt: string; src: string; className?: string }) {
   return <VerifiedNewsImage {...props} />;
 }
@@ -23,12 +127,12 @@ function FeaturedCard({ article }: { article: VerifiedNewsArticle }) {
   return (
     <Link
       to={WEBSITE_ROUTES.verifiedNewsDetail(article.slug)}
-      className="group block relative overflow-hidden rounded-xl bg-surface-container-lowest shadow-sm hover:shadow-xl transition-all duration-500 border border-outline-variant/10 hover:border-gold-metallic-start/40 h-full"
+      className="group block relative overflow-hidden rounded-xl bg-surface-container-lowest shadow-sm border border-outline-variant/10 h-full site-card-hover"
     >
       <div className="aspect-[16/9] overflow-hidden relative">
         <NewsImage
           alt={article.title}
-          className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+          className="w-full h-full object-cover site-card-image"
           src={article.listImage}
         />
         {article.trustBadge && (
@@ -86,12 +190,12 @@ function StandardCard({ article }: { article: VerifiedNewsArticle }) {
   return (
     <Link
       to={WEBSITE_ROUTES.verifiedNewsDetail(article.slug)}
-      className="group block bg-surface-container-lowest rounded-xl border border-outline-variant/10 overflow-hidden hover:shadow-lg hover:border-gold-metallic-start/40 transition-all"
+      className="group block bg-surface-container-lowest rounded-xl border border-outline-variant/10 overflow-hidden site-card-hover"
     >
       <div className="aspect-video relative overflow-hidden">
         <NewsImage
           alt={article.title}
-          className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+          className="w-full h-full object-cover site-card-image"
           src={article.listImage}
         />
         {article.trustBadge && (
@@ -117,7 +221,7 @@ function CompactCard({ article }: { article: VerifiedNewsArticle }) {
   return (
     <Link
       to={WEBSITE_ROUTES.verifiedNewsDetail(article.slug)}
-      className="group block bg-surface-container-lowest rounded-xl border border-outline-variant/10 overflow-hidden hover:shadow-lg hover:border-gold-metallic-start/40 transition-all p-6 h-full"
+      className="group block bg-surface-container-lowest rounded-xl border border-outline-variant/10 overflow-hidden p-6 h-full site-card-hover"
     >
       <div
         className={`w-10 h-10 rounded-full flex items-center justify-center mb-4 ${
@@ -187,7 +291,7 @@ function SubscribeCard() {
         />
         <button
           type="submit"
-          className="bg-gold-metallic-start text-primary font-bold px-4 py-2 rounded-lg hover:bg-gold-metallic-end transition-colors text-sm shrink-0"
+          className="bg-gold-metallic-start text-primary font-bold px-4 py-2 rounded-lg hover:bg-gold-metallic-end transition-colors text-sm shrink-0 site-btn-shine"
         >
           اشترك
         </button>
@@ -212,32 +316,36 @@ function BentoNewsGrid({
     .map((slug) => bySlug[slug])
     .filter(Boolean) as VerifiedNewsArticle[];
 
+  let staggerIndex = 0;
+
   return (
     <div className="grid grid-cols-1 md:grid-cols-12 gap-gutter">
       {featured && (
-        <div className="md:col-span-8">
+        <StaggerReveal index={staggerIndex++} className="md:col-span-8">
           <FeaturedCard article={featured} />
-        </div>
+        </StaggerReveal>
       )}
 
       {sidebar.length > 0 && (
         <div className="md:col-span-4 flex flex-col gap-gutter">
           {sidebar.map((article) => (
-            <StandardCard key={article.id} article={article} />
+            <StaggerReveal key={article.id} index={staggerIndex++}>
+              <StandardCard article={article} />
+            </StaggerReveal>
           ))}
         </div>
       )}
 
       {bottomRow.map((article) => (
-        <div key={article.id} className="md:col-span-4">
+        <StaggerReveal key={article.id} index={staggerIndex++} className="md:col-span-4">
           <CompactCard article={article} />
-        </div>
+        </StaggerReveal>
       ))}
 
       {showSubscribe && (
-        <div className="md:col-span-4">
+        <StaggerReveal index={staggerIndex++} className="md:col-span-4">
           <SubscribeCard />
-        </div>
+        </StaggerReveal>
       )}
     </div>
   );
@@ -246,14 +354,20 @@ function BentoNewsGrid({
 function FlexibleNewsGrid({ articles }: { articles: VerifiedNewsArticle[] }) {
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-gutter">
-      {articles.map((article) => {
-        if (article.cardVariant === "featured") {
-          return <FeaturedCard key={article.id} article={article} />;
-        }
-        if (article.cardVariant === "standard") {
-          return <StandardCard key={article.id} article={article} />;
-        }
-        return <CompactCard key={article.id} article={article} />;
+      {articles.map((article, index) => {
+        const card =
+          article.cardVariant === "featured" ? (
+            <FeaturedCard article={article} />
+          ) : article.cardVariant === "standard" ? (
+            <StandardCard article={article} />
+          ) : (
+            <CompactCard article={article} />
+          );
+        return (
+          <StaggerReveal key={article.id} index={index}>
+            {card}
+          </StaggerReveal>
+        );
       })}
     </div>
   );
@@ -266,86 +380,118 @@ export default function VerifiedNews() {
   const useBento = activeFilter === "all" && isFullBentoLayout(filtered);
 
   return (
-    <main className="relative mist-bg rounded-2xl p-6 md:p-8 border border-outline-variant/10">
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-6 mb-10">
-        <div>
-          <p className="inline-flex items-center gap-2 text-gold-metallic-start font-label-bold text-xs mb-3">
-            <span
-              className="material-symbols-outlined text-[16px]"
-              style={{ fontVariationSettings: "'FILL' 1" }}
-            >
-              verified
-            </span>
-            الأخبار الموثقة
-          </p>
-          <h1 className="font-display-lg-mobile md:font-display-lg text-primary mb-2">
-            الأخبار الموثقة
-          </h1>
-          <p className="text-on-surface-variant max-w-2xl font-body-lg text-body-lg">
-            خلاصة الأنباء التي تم إخضاعها لأدق معايير التحقق الرقمي والذكاء
-            الاصطناعي لضمان نزاهة المحتوى.
-          </p>
+    <>
+    <main className="verified-news-shell relative rounded-2xl p-5 md:p-8">
+      <header className="verified-news-hero relative mb-8 overflow-hidden rounded-2xl p-6 md:p-8">
+        <div className="verified-news-hero-accent" aria-hidden />
+        <div
+          className="pointer-events-none absolute -left-16 -top-16 h-48 w-48 rounded-full bg-gold-metallic-start/10 blur-3xl"
+          aria-hidden
+        />
+        <div
+          className="pointer-events-none absolute -bottom-20 -right-10 h-56 w-56 rounded-full bg-success-teal/6 blur-3xl"
+          aria-hidden
+        />
+        <div
+          className="pointer-events-none absolute bottom-4 left-4 h-20 w-20 rounded-full border border-gold-metallic-start/15 opacity-60"
+          aria-hidden
+        />
+
+        <div className="relative flex flex-col gap-8 lg:flex-row lg:items-start lg:justify-between">
+          <div className="max-w-2xl">
+            <EnterItem index={0}>
+              <div className="mb-4 inline-flex flex-row-reverse items-center gap-2 rounded-full border border-gold-metallic-start/30 bg-gold-metallic-start/10 px-3.5 py-1.5">
+                <span
+                  className="material-symbols-outlined text-[18px] text-gold-metallic-start"
+                  style={{ fontVariationSettings: "'FILL' 1" }}
+                >
+                  verified
+                </span>
+                <span className="font-label-bold text-xs text-gold-metallic-start">
+                  تحقق رقمي · ذكاء اصطناعي
+                </span>
+              </div>
+            </EnterItem>
+
+            <EnterItem index={1}>
+              <h1 className="mb-4 font-display-lg-mobile leading-tight text-primary md:font-display-lg site-section-title site-section-title-visible">
+                الأخبار الموثقة
+              </h1>
+            </EnterItem>
+
+            <EnterItem index={2}>
+              <p className="max-w-xl font-body-lg text-body-lg leading-relaxed text-on-surface-variant">
+                خلاصة الأنباء التي تم إخضاعها لأدق معايير التحقق الرقمي والذكاء
+                الاصطناعي لضمان نزاهة المحتوى.
+              </p>
+            </EnterItem>
+          </div>
+
+          <EnterItem index={3} className="flex shrink-0 flex-wrap gap-3 lg:flex-col lg:items-stretch">
+            <HeaderStatCard
+              target={INTEGRITY_DAILY_STATS.score}
+              label="مؤشر النزاهة اليومي"
+              valueClassName="text-primary"
+            />
+            <HeaderStatCard
+              target={INTEGRITY_DAILY_STATS.change}
+              label="مقارنة بالأمس"
+              prefix="+"
+              suffix="%"
+              valueClassName="text-success-teal"
+            />
+          </EnterItem>
         </div>
-        <div className="flex gap-2 overflow-x-auto pb-2 w-full md:w-auto shrink-0">
-          {NEWS_FILTERS.map((filter) => (
-            <button
-              key={filter.id}
-              type="button"
-              className={`px-5 py-2 rounded-full font-label-bold text-label-bold whitespace-nowrap transition-colors ${
-                activeFilter === filter.id
-                  ? "bg-primary text-on-primary"
-                  : "bg-surface-container-highest text-on-surface-variant hover:bg-mist-grey"
-              }`}
-              onClick={() => setActiveFilter(filter.id)}
-            >
-              {filter.label}
-            </button>
-          ))}
+      </header>
+
+      <EnterItem index={4}>
+        <div className="verified-news-filter-bar mb-10 flex flex-col gap-4 rounded-xl px-1 pb-6 pt-2 sm:flex-row sm:flex-wrap sm:items-center">
+          <span className="shrink-0 font-label-bold text-label-bold text-on-surface-variant">
+            التصنيف:
+          </span>
+          <div className="flex gap-2 overflow-x-auto pb-1 sm:flex-wrap sm:overflow-visible sm:pb-0">
+            {NEWS_FILTERS.map((filter) => (
+              <button
+                key={filter.id}
+                type="button"
+                className={`shrink-0 rounded-full px-5 py-2 font-label-bold text-label-bold whitespace-nowrap transition-all ${
+                  activeFilter === filter.id
+                    ? "bg-primary text-on-primary shadow-sm"
+                    : "border border-outline-variant/35 bg-surface-container-lowest text-on-surface-variant hover:border-gold-metallic-start/45 hover:text-primary hover:shadow-sm"
+                }`}
+                onClick={() => setActiveFilter(filter.id)}
+              >
+                {filter.label}
+              </button>
+            ))}
+          </div>
         </div>
-      </div>
+      </EnterItem>
 
       {filtered.length === 0 ? (
-        <div className="glass-panel rounded-2xl p-12 text-center border border-outline-variant/10">
-          <span className="material-symbols-outlined text-4xl text-outline mb-4">
-            news_off
-          </span>
-          <p className="font-headline-sm mb-2">لا توجد أخبار في هذا التصنيف</p>
-          <button
-            type="button"
-            className="mt-4 px-6 py-2 border border-primary text-primary rounded-lg font-label-bold"
-            onClick={() => setActiveFilter("all")}
-          >
-            عرض الكل
-          </button>
-        </div>
+        <RevealOnScroll>
+          <div className="glass-panel rounded-2xl p-12 text-center border border-outline-variant/10">
+            <span className="material-symbols-outlined text-4xl text-outline mb-4">
+              news_off
+            </span>
+            <p className="font-headline-sm mb-2">لا توجد أخبار في هذا التصنيف</p>
+            <button
+              type="button"
+              className="mt-4 px-6 py-2 border border-primary text-primary rounded-lg font-label-bold site-btn-shine"
+              onClick={() => setActiveFilter("all")}
+            >
+              عرض الكل
+            </button>
+          </div>
+        </RevealOnScroll>
       ) : useBento ? (
         <BentoNewsGrid articles={filtered} showSubscribe />
       ) : (
         <FlexibleNewsGrid articles={filtered} />
       )}
-
-      <div className="hidden xl:block fixed bottom-10 left-10 z-30 pointer-events-none">
-        <div className="glass-panel p-5 rounded-2xl shadow-2xl border border-white/40 w-64 pointer-events-auto">
-          <div className="flex items-center justify-between mb-3">
-            <span className="font-label-bold text-xs opacity-60">
-              مؤشر النزاهة اليومي
-            </span>
-            <span className="text-gold-metallic-start">✨</span>
-          </div>
-          <div className="flex items-end gap-2 mb-2">
-            <span className="font-stats-number text-stats-number text-primary">
-              {INTEGRITY_DAILY_STATS.score}
-            </span>
-            <span className="text-success-teal text-xs mb-1 font-bold">
-              {INTEGRITY_DAILY_STATS.change}
-            </span>
-          </div>
-          <p className="text-[10px] text-on-surface-variant">
-            تم فحص {INTEGRITY_DAILY_STATS.scannedToday} خبر اليوم باستخدام
-            خوارزميات اليمامة.
-          </p>
-        </div>
-      </div>
     </main>
+
+    <IntegrityFloatingPanel />
+    </>
   );
 }

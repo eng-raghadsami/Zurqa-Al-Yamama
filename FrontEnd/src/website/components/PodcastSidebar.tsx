@@ -1,5 +1,9 @@
 import { Link } from "react-router-dom";
-import { WEBSITE_ROUTES } from "@core/constants/routes";
+import {
+  routeOrPlaceholder,
+  WEBSITE_ROUTES,
+} from "@core/constants/routes";
+import SmartLink from "@shared/components/SmartLink";
 
 const sidebarItems = [
   {
@@ -10,22 +14,22 @@ const sidebarItems = [
   {
     label: "قضايا اجتماعية",
     icon: "groups",
-    href: WEBSITE_ROUTES.STORIES_COMMUNITY,
+    href: routeOrPlaceholder(WEBSITE_ROUTES.STORIES_COMMUNITY),
   },
   {
     label: "قصص نجاح",
     icon: "military_tech",
-    href: WEBSITE_ROUTES.STORIES_SUCCESS,
+    href: routeOrPlaceholder(WEBSITE_ROUTES.STORIES_SUCCESS),
   },
   {
     label: "شؤون المرأة",
     icon: "woman",
-    href: WEBSITE_ROUTES.STORIES_WOMEN,
+    href: routeOrPlaceholder(WEBSITE_ROUTES.STORIES_WOMEN),
   },
   {
-    label: "الأكثر تداولاً",
-    icon: "trending_up",
-    href: WEBSITE_ROUTES.STORIES,
+    label: "البودكاست",
+    icon: "podcasts",
+    href: WEBSITE_ROUTES.PODCASTS,
     active: true,
   },
 ];
@@ -58,28 +62,28 @@ export default function PodcastSidebar() {
               <span className="font-label-bold text-label-bold">{item.label}</span>
             </div>
           ) : (
-            <Link
+            <SmartLink
               key={item.label}
-              className="flex items-center gap-3 text-on-surface-variant hover:bg-surface-variant/50 rounded-lg p-3 transition-all group"
               to={item.href}
+              className="flex items-center gap-3 text-on-surface-variant hover:bg-surface-variant/50 rounded-lg p-3 transition-all group"
             >
               <span className="material-symbols-outlined">{item.icon}</span>
               <span className="font-label-bold text-label-bold group-hover:text-primary">
                 {item.label}
               </span>
-            </Link>
+            </SmartLink>
           ),
         )}
       </nav>
 
       <div className="mt-auto px-4 pb-4">
-        <button
-          type="button"
+        <Link
+          to={WEBSITE_ROUTES.VERIFICATION_IMAGE}
           className="w-full py-3 border border-gold-metallic-start text-gold-metallic-start rounded-lg font-label-bold hover:bg-gold-metallic-start hover:text-white transition-all flex items-center justify-center gap-2"
         >
           <span>تحليل قصة جديدة</span>
           <span className="material-symbols-outlined">add</span>
-        </button>
+        </Link>
       </div>
     </aside>
   );

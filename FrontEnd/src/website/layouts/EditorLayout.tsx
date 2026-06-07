@@ -1,3 +1,4 @@
+import { PageEnter } from "@shared/components/animations";
 import { Outlet, useLocation } from "react-router-dom";
 import { WEBSITE_ROUTES } from "@core/constants/routes";
 import TopNav from "@website/components/TopNav";
@@ -31,7 +32,9 @@ export default function EditorLayout() {
           isContentReview ? "pb-36 lg:pb-32" : "pb-24 lg:pb-12"
         }`}
       >
-        <Outlet />
+        <PageEnter>
+          <Outlet />
+        </PageEnter>
       </main>
       <SidebarBottomNav />
     </div>

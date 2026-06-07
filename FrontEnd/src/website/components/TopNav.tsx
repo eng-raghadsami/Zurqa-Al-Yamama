@@ -7,6 +7,7 @@ import LibraryNavDropdown, {
 import NotificationsDropdown from "@website/components/NotificationsDropdown";
 import SettingsDropdown from "@website/components/SettingsDropdown";
 import MobileNavDrawer from "@website/components/MobileNavDrawer";
+import { getVerificationCta } from "@website/helpers/verificationNav";
 import {
   SITE_LOGO,
   USER_AVATAR,
@@ -73,6 +74,7 @@ export default function TopNav({
   const verificationActive = pathname.startsWith(WEBSITE_ROUTES.VERIFICATION);
   const mediaLiteracyActive = pathname.startsWith(WEBSITE_ROUTES.MEDIA_LITERACY);
   const mySpaceActive = pathname.startsWith(WEBSITE_ROUTES.MY_SPACE);
+  const verificationCta = getVerificationCta(pathname);
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 50);
@@ -175,12 +177,12 @@ export default function TopNav({
                 >
                   قصص إنسانية
                 </Link>
-                <Link
+                <a
                   className="block px-4 py-3 text-sm hover:bg-secondary-container/10 hover:text-secondary transition-colors border-b border-outline-variant/10"
-                  to={WEBSITE_ROUTES.STORIES_SUCCESS}
+                  href="#"
                 >
                   قصص نجاح
-                </Link>
+                </a>
                 <a
                   className="block px-4 py-3 text-sm hover:bg-secondary-container/10 hover:text-secondary transition-colors border-b border-outline-variant/10"
                   href="#"
@@ -221,12 +223,12 @@ export default function TopNav({
                 >
                   تحقق من الفيديوهات
                 </Link>
-                <a
+                <Link
                   className="block px-4 py-3 text-sm hover:bg-secondary-container/10 hover:text-secondary transition-colors"
-                  href="#"
+                  to={WEBSITE_ROUTES.EDITOR_DISINFORMATION_ARCHIVE}
                 >
                   مكافحة التضليل
-                </a>
+                </Link>
               </div>
             </div>
           </div>
@@ -262,10 +264,13 @@ export default function TopNav({
                 </button>
               )}
               <Link
-                to={WEBSITE_ROUTES.VERIFICATION_IMAGE}
-                className="hidden lg:flex items-center px-5 py-2 gold-gradient-bg text-on-primary font-label-bold text-label-bold rounded-lg shadow-md hover:opacity-90 transition-all active:scale-95 whitespace-nowrap"
+                to={verificationCta.to}
+                className="hidden lg:flex items-center gap-2 px-5 py-2 gold-gradient-bg text-on-primary font-label-bold text-label-bold rounded-lg shadow-md hover:opacity-90 transition-all active:scale-95 whitespace-nowrap"
               >
-                تقديم ملف للتحقق
+                <span className="material-symbols-outlined text-[18px]">
+                  {verificationCta.icon}
+                </span>
+                {verificationCta.label}
               </Link>
               <NotificationsDropdown />
               <SettingsDropdown />

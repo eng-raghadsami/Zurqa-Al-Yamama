@@ -1,6 +1,8 @@
 import { Link, useLocation } from "react-router-dom";
 import { WEBSITE_ROUTES } from "@core/constants/routes";
 
+import { getVerificationCta } from "@website/helpers/verificationNav";
+
 const navItems = [
   {
     label: "التقارير",
@@ -39,6 +41,7 @@ type SidebarBottomNavProps = {
 
 export default function SidebarBottomNav({ className = "" }: SidebarBottomNavProps) {
   const { pathname } = useLocation();
+  const verificationCta = getVerificationCta(pathname);
   const [first, second, third, fourth] = navItems;
 
   const linkClass = (match: string) =>
@@ -63,11 +66,13 @@ export default function SidebarBottomNav({ className = "" }: SidebarBottomNavPro
 
       <div className="relative -mt-10">
         <Link
-          to={WEBSITE_ROUTES.VERIFICATION_IMAGE}
+          to={verificationCta.to}
           className="bg-gradient-to-br from-gold-metallic-start to-gold-metallic-end text-white p-4 rounded-full shadow-2xl border-4 border-surface active:scale-90 transition-transform flex"
-          aria-label="تقديم ملف للتحقق"
+          aria-label={verificationCta.label}
         >
-          <span className="material-symbols-outlined text-3xl">add</span>
+          <span className="material-symbols-outlined text-3xl">
+            {verificationCta.icon}
+          </span>
         </Link>
       </div>
 

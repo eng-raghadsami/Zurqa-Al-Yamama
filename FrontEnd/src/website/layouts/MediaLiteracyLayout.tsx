@@ -1,3 +1,4 @@
+import { PageEnter } from "@shared/components/animations";
 import { Outlet } from "react-router-dom";
 import TopNav from "@website/components/TopNav";
 import MediaLiteracyFooter from "@website/components/MediaLiteracyFooter";
@@ -17,7 +18,9 @@ export default function MediaLiteracyLayout() {
       <div className="max-w-container-max mx-auto px-margin-desktop pt-20 pb-24 lg:pb-12 flex flex-col lg:flex-row gap-gutter">
         <MediaLiteracySidebar />
         <div className="flex-1 min-w-0">
-          <Outlet />
+          <PageEnter>
+            <Outlet />
+          </PageEnter>
         </div>
       </div>
       <MediaLiteracyFooter />

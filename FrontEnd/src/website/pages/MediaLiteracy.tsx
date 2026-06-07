@@ -1,3 +1,6 @@
+import RevealOnScroll from "@shared/components/RevealOnScroll";
+import { EnterItem, StaggerReveal } from "@shared/components/animations";
+
 const HERO_BG =
   "https://lh3.googleusercontent.com/aida-public/AB6AXuBrLacCmWxKOvkm1De3M7t0SY8gfuz1jzFok2sRPiEObE5GOjw4DCb5nnklMA1o4CgvUgSUfPc8Qy2Zruqn41pB5KbxXcAwIUgfk54uuSUMHchrY3mXVCS-9G3UraR5Juunmdls7ma_anMhdJdLYb2H3DYpAzC6c0_2vTVa3_iDQIReHXLLJSX24YHbis9FhRZKlvrpFws-_NXWMq_dFJVZIatZX5Wzvj2ErUW2qCa0HL1fKwYyaLhgoGBePJ9wnuISz-QR9948PtNa";
 
@@ -76,72 +79,86 @@ export default function MediaLiteracy() {
       <section className="relative overflow-hidden rounded-xl mb-section-gap shadow-lg min-h-[400px] flex flex-col justify-center border-r-4 border-gold-metallic-start">
         <img
           alt=""
-          className="absolute inset-0 w-full h-full object-cover"
+          className="absolute inset-0 w-full h-full object-cover site-hero-ken-burns"
           src={HERO_BG}
         />
         <div
           aria-hidden
           className="absolute inset-0 bg-white/55 backdrop-blur-[2px]"
         />
-        <div className="relative z-10 p-12 max-w-2xl">
-          <div className="inline-flex items-center gap-2 bg-gold-metallic-start/20 text-gold-metallic-start px-4 py-1 rounded-full mb-6 border border-gold-metallic-start/100">
-            <span
-              className="material-symbols-outlined text-[18px]"
-              style={{ fontVariationSettings: "'FILL' 1" }}
-            >
-              verified
-            </span>
-            <span className="font-label-bold text-[12px]">
-              محو الأمية الرقمية
-            </span>
-          </div>
-          <h1 className="font-display-lg text-display-lg-mobile text-primary mb-6 leading-tight">
-            مركز المعرفة الإعلامية
-          </h1>
-          <p className="font-body-lg text-on-surface-variant mb-8 leading-relaxed">
-            تمكين المستخدمين بالأدوات والمهارات اللازمة للتنقل في المشهد الرقمي
-            المعقد. نحن نقدم الدقة والوضوح في عصر الضوضاء المعلوماتية.
-          </p>
-          <div className="flex flex-wrap gap-4">
-            <a
-              className="bg-primary text-white font-label-bold px-8 py-3 rounded-lg hover:shadow-xl transition-all"
-              href="#tracks"
-            >
-              ابدأ التعلم الآن
-            </a>
-            <a
-              className="border border-primary text-primary font-label-bold px-8 py-3 rounded-lg hover:bg-surface-container transition-all"
-              href="#articles"
-            >
-              استعراض الأدلة
-            </a>
-          </div>
+        <div className="relative z-10 p-12 max-w-2xl site-hero-overlay-enter">
+          <EnterItem index={0}>
+            <div className="inline-flex items-center gap-2 bg-gold-metallic-start/20 text-gold-metallic-start px-4 py-1 rounded-full mb-6 border border-gold-metallic-start/100">
+              <span
+                className="material-symbols-outlined text-[18px]"
+                style={{ fontVariationSettings: "'FILL' 1" }}
+              >
+                verified
+              </span>
+              <span className="font-label-bold text-[12px]">
+                محو الأمية الرقمية
+              </span>
+            </div>
+          </EnterItem>
+          <EnterItem index={1}>
+            <h1 className="font-display-lg text-display-lg-mobile text-primary mb-6 leading-tight">
+              مركز المعرفة الإعلامية
+            </h1>
+          </EnterItem>
+          <EnterItem index={2}>
+            <p className="font-body-lg text-on-surface-variant mb-8 leading-relaxed">
+              تمكين المستخدمين بالأدوات والمهارات اللازمة للتنقل في المشهد الرقمي
+              المعقد. نحن نقدم الدقة والوضوح في عصر الضوضاء المعلوماتية.
+            </p>
+          </EnterItem>
+          <EnterItem index={3}>
+            <div className="flex flex-wrap gap-4">
+              <a
+                className="bg-primary text-white font-label-bold px-8 py-3 rounded-lg hover:shadow-xl transition-all site-btn-shine"
+                href="#tracks"
+              >
+                ابدأ التعلم الآن
+              </a>
+              <a
+                className="border border-primary text-primary font-label-bold px-8 py-3 rounded-lg hover:bg-surface-container transition-all"
+                href="#articles"
+              >
+                استعراض الأدلة
+              </a>
+            </div>
+          </EnterItem>
         </div>
       </section>
 
       <section className="mb-section-gap" id="tracks">
-        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-end gap-4 mb-8">
-          <div>
-            <h2 className="font-headline-md text-primary">مسارات التعلم</h2>
-            <p className="text-on-surface-variant">
-              اختر تخصصك وابدأ في بناء درعك المعلوماتي
-            </p>
+        <RevealOnScroll direction="up">
+          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-end gap-4 mb-8">
+            <div>
+              <h2 className="font-headline-md text-primary site-section-title site-section-title-visible">
+                مسارات التعلم
+              </h2>
+              <p className="text-on-surface-variant">
+                اختر تخصصك وابدأ في بناء درعك المعلوماتي
+              </p>
+            </div>
+            <a
+              className="text-gold-metallic-start font-label-bold flex items-center gap-1 hover:underline shrink-0"
+              href="#tracks"
+            >
+              عرض جميع المسارات
+              <span className="material-symbols-outlined text-sm">
+                arrow_back_ios
+              </span>
+            </a>
           </div>
-          <a
-            className="text-gold-metallic-start font-label-bold flex items-center gap-1 hover:underline shrink-0"
-            href="#tracks"
-          >
-            عرض جميع المسارات
-            <span className="material-symbols-outlined text-sm">
-              arrow_back_ios
-            </span>
-          </a>
-        </div>
+        </RevealOnScroll>
         <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-gutter">
-          {LEARNING_TRACKS.map((track) => (
-            <div
+          {LEARNING_TRACKS.map((track, i) => (
+            <StaggerReveal
               key={track.title}
-              className="group bg-white p-6 rounded-xl shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 cursor-pointer border border-transparent hover:border-gold-metallic-start/30"
+              index={i}
+              as="article"
+              className="group bg-white p-6 rounded-xl shadow-sm site-card-hover cursor-pointer border border-transparent hover:border-gold-metallic-start/30"
             >
               <div className="w-14 h-14 bg-surface-container rounded-lg flex items-center justify-center text-primary mb-6 group-hover:bg-gold-metallic-start group-hover:text-white transition-colors">
                 <span className="material-symbols-outlined text-[32px]">
@@ -157,73 +174,79 @@ export default function MediaLiteracy() {
               <span className="text-primary font-label-bold text-xs">
                 {track.units}
               </span>
-            </div>
+            </StaggerReveal>
           ))}
         </div>
       </section>
 
       <section className="mb-section-gap">
-        <div className="bg-primary text-white rounded-xl overflow-hidden shadow-2xl flex flex-col md:flex-row items-center relative">
-          <div className="absolute top-0 left-0 w-32 h-32 bg-gold-metallic-start/20 blur-[60px] rounded-full pointer-events-none" />
-          <div className="md:w-1/3 p-8 relative z-10">
-            <img
-              alt="مقدّم الورشة"
-              className="w-full aspect-video md:aspect-square object-cover rounded-lg"
-              src={WEBINAR_SPEAKER}
-            />
-          </div>
-          <div className="md:w-2/3 p-8 relative z-10">
-            <div className="flex items-center gap-2 mb-4">
-              <span className="w-2 h-2 bg-error rounded-full animate-pulse" />
-              <span className="font-label-bold text-xs tracking-wider">
-                جلسة مباشرة قادمة
-              </span>
+        <RevealOnScroll direction="up">
+          <div className="bg-primary text-white rounded-xl overflow-hidden shadow-2xl flex flex-col md:flex-row items-center relative">
+            <div className="absolute top-0 left-0 w-32 h-32 bg-gold-metallic-start/20 blur-[60px] rounded-full pointer-events-none" />
+            <div className="md:w-1/3 p-8 relative z-10">
+              <img
+                alt="مقدّم الورشة"
+                className="w-full aspect-video md:aspect-square object-cover rounded-lg site-card-image"
+                src={WEBINAR_SPEAKER}
+              />
             </div>
-            <h2 className="font-headline-md mb-2">
-              مستقبل الخداع الرقمي: عام 2025 وما بعده
-            </h2>
-            <p className="text-mist-grey mb-6 opacity-80 leading-relaxed">
-              انضم إلينا في جلسة تفاعلية مع كبار محللي زرقاء اليمامة لمناقشة
-              أحدث تقنيات التزييف وكيفية حماية نفسك ومؤسستك.
-            </p>
-            <div className="flex flex-wrap gap-6 items-center">
-              <div className="flex items-center gap-2">
-                <span className="material-symbols-outlined text-gold-metallic-start">
-                  calendar_today
+            <div className="md:w-2/3 p-8 relative z-10">
+              <div className="flex items-center gap-2 mb-4">
+                <span className="w-2 h-2 bg-error rounded-full animate-pulse" />
+                <span className="font-label-bold text-xs tracking-wider">
+                  جلسة مباشرة قادمة
                 </span>
-                <span className="text-sm">24 أكتوبر، 2024</span>
               </div>
-              <div className="flex items-center gap-2">
-                <span className="material-symbols-outlined text-gold-metallic-start">
-                  schedule
-                </span>
-                <span className="text-sm">08:00 مساءً بتوقيت مكة</span>
+              <h2 className="font-headline-md mb-2">
+                مستقبل الخداع الرقمي: عام 2025 وما بعده
+              </h2>
+              <p className="text-mist-grey mb-6 opacity-80 leading-relaxed">
+                انضم إلينا في جلسة تفاعلية مع كبار محللي زرقاء اليمامة لمناقشة
+                أحدث تقنيات التزييف وكيفية حماية نفسك ومؤسستك.
+              </p>
+              <div className="flex flex-wrap gap-6 items-center">
+                <div className="flex items-center gap-2">
+                  <span className="material-symbols-outlined text-gold-metallic-start">
+                    calendar_today
+                  </span>
+                  <span className="text-sm">24 أكتوبر، 2024</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <span className="material-symbols-outlined text-gold-metallic-start">
+                    schedule
+                  </span>
+                  <span className="text-sm">08:00 مساءً بتوقيت مكة</span>
+                </div>
+                <button
+                  type="button"
+                  className="bg-gold-metallic-start text-primary font-label-bold px-8 py-3 rounded-lg hover:bg-gold-metallic-end transition-all mr-auto site-btn-shine"
+                >
+                  سجل الآن مجاناً
+                </button>
               </div>
-              <button
-                type="button"
-                className="bg-gold-metallic-start text-primary font-label-bold px-8 py-3 rounded-lg hover:bg-gold-metallic-end transition-all mr-auto"
-              >
-                سجل الآن مجاناً
-              </button>
             </div>
           </div>
-        </div>
+        </RevealOnScroll>
       </section>
 
       <section className="mb-section-gap" id="articles">
-        <h2 className="font-headline-md text-primary mb-8">
-          مقالات وأدلة تعليمية
-        </h2>
+        <RevealOnScroll direction="up">
+          <h2 className="font-headline-md text-primary mb-8 site-section-title site-section-title-visible">
+            مقالات وأدلة تعليمية
+          </h2>
+        </RevealOnScroll>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-gutter">
-          {ARTICLES.map((article) => (
-            <article
+          {ARTICLES.map((article, i) => (
+            <StaggerReveal
               key={article.title}
-              className="group overflow-hidden rounded-xl bg-white shadow-sm hover:shadow-xl transition-all"
+              index={i}
+              as="article"
+              className="group overflow-hidden rounded-xl bg-white shadow-sm site-card-hover"
             >
               <div className="relative overflow-hidden h-48">
                 <img
                   alt={article.title}
-                  className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                  className="w-full h-full object-cover site-card-image"
                   src={article.image}
                 />
                 <div
@@ -241,40 +264,42 @@ export default function MediaLiteracy() {
                   {article.excerpt}
                 </p>
               </div>
-            </article>
+            </StaggerReveal>
           ))}
         </div>
       </section>
 
-      <section className="bg-surface-container rounded-xl p-10 flex flex-col items-center text-center">
-        <div className="w-16 h-16 bg-white rounded-full shadow-md flex items-center justify-center text-gold-metallic-start mb-6">
-          <span className="material-symbols-outlined text-[32px]">mail</span>
-        </div>
-        <h2 className="font-headline-md mb-2">اشترك في نشرتنا البريدية</h2>
-        <p className="text-on-surface-variant mb-8 max-w-lg">
-          احصل على أحدث نصائح التحقق الإعلامي وتنبيهات حملات التضليل مباشرة في
-          بريدك الإلكتروني أسبوعياً.
-        </p>
-        <form
-          className="flex flex-col sm:flex-row gap-4 w-full max-w-md"
-          onSubmit={(e) => e.preventDefault()}
-        >
-          <input
-            className="flex-1 bg-white border border-outline-variant rounded-lg px-6 py-3 focus:outline-none focus:ring-2 focus:ring-gold-metallic-start"
-            placeholder="بريدك الإلكتروني"
-            type="email"
-          />
-          <button
-            type="submit"
-            className="bg-primary text-white font-label-bold px-8 py-3 rounded-lg hover:shadow-lg transition-all"
+      <RevealOnScroll direction="up">
+        <section className="bg-surface-container rounded-xl p-10 flex flex-col items-center text-center">
+          <div className="w-16 h-16 bg-white rounded-full shadow-md flex items-center justify-center text-gold-metallic-start mb-6">
+            <span className="material-symbols-outlined text-[32px]">mail</span>
+          </div>
+          <h2 className="font-headline-md mb-2">اشترك في نشرتنا البريدية</h2>
+          <p className="text-on-surface-variant mb-8 max-w-lg">
+            احصل على أحدث نصائح التحقق الإعلامي وتنبيهات حملات التضليل مباشرة في
+            بريدك الإلكتروني أسبوعياً.
+          </p>
+          <form
+            className="flex flex-col sm:flex-row gap-4 w-full max-w-md"
+            onSubmit={(e) => e.preventDefault()}
           >
-            اشترك الآن
-          </button>
-        </form>
-        <p className="text-[12px] text-on-surface-variant mt-4">
-          نحن نحترم خصوصيتك. يمكنك إلغاء الاشتراك في أي وقت.
-        </p>
-      </section>
+            <input
+              className="flex-1 bg-white border border-outline-variant rounded-lg px-6 py-3 focus:outline-none focus:ring-2 focus:ring-gold-metallic-start"
+              placeholder="بريدك الإلكتروني"
+              type="email"
+            />
+            <button
+              type="submit"
+              className="bg-primary text-white font-label-bold px-8 py-3 rounded-lg hover:shadow-lg transition-all site-btn-shine"
+            >
+              اشترك الآن
+            </button>
+          </form>
+          <p className="text-[12px] text-on-surface-variant mt-4">
+            نحن نحترم خصوصيتك. يمكنك إلغاء الاشتراك في أي وقت.
+          </p>
+        </section>
+      </RevealOnScroll>
     </main>
   );
 }

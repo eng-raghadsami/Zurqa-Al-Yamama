@@ -7,12 +7,38 @@ export const LIBRARY_NAV_ITEMS: {
   id: LibraryNavId;
   label: string;
   to: string;
+  featured?: boolean;
 }[] = [
+  {
+    id: "verified-news",
+    label: "الأخبار الموثقة",
+    to: WEBSITE_ROUTES.VERIFIED_NEWS,
+    featured: true,
+  },
   { id: "visuals", label: "المرئيات", to: WEBSITE_ROUTES.VISUALS },
   { id: "podcasts", label: "البودكاست", to: WEBSITE_ROUTES.PODCASTS },
   { id: "terminology", label: "المصطلحات", to: WEBSITE_ROUTES.MEDIA_TERMINOLOGY },
-  { id: "verified-news", label: "الأخبار الموثقة", to: WEBSITE_ROUTES.VERIFIED_NEWS },
 ];
+
+export function LibraryNavItemLabel({
+  label,
+  featured = false,
+}: {
+  label: string;
+  featured?: boolean;
+}) {
+  return (
+    <span className="flex flex-row-reverse items-center justify-end gap-2">
+      <span>{label}</span>
+      {featured && (
+        <span className="relative flex h-2 w-2 shrink-0" aria-hidden>
+          <span className="home-live-ping absolute inline-flex h-full w-full rounded-full bg-gold-metallic-start opacity-75" />
+          <span className="relative inline-flex h-2 w-2 rounded-full bg-gold-metallic-start shadow-[0_0_6px_rgba(212,175,55,0.65)]" />
+        </span>
+      )}
+    </span>
+  );
+}
 
 export function resolveLibraryNavId(pathname: string): LibraryNavId | undefined {
   if (pathname.startsWith(WEBSITE_ROUTES.VERIFIED_NEWS)) return "verified-news";
@@ -81,7 +107,7 @@ export default function LibraryNavDropdown({
               className={itemClass(activeId === item.id, variant)}
               to={item.to}
             >
-              {item.label}
+              <LibraryNavItemLabel label={item.label} featured={item.featured} />
             </Link>
           ))}
         </div>

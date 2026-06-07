@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState, type ReactNode } from "react";
+import { useState } from "react";
 import { Link } from "react-router-dom";
 import { WEBSITE_ROUTES } from "@core/constants/routes";
 import { MY_SPACE_PROFILE_AVATAR } from "@website/constants/brand";
@@ -6,6 +6,8 @@ import AnimatedStatNumber, {
   AnimatedCircularProgress,
   AnimatedLinearProgress,
 } from "@shared/components/AnimatedStatNumber";
+import RevealOnScroll from "@shared/components/RevealOnScroll";
+import { EnterItem, StaggerReveal } from "@shared/components/animations";
 import type {
   LibraryItemType,
   VerificationRequest,
@@ -20,44 +22,6 @@ import {
   MY_SPACE_USER,
   VERIFICATION_REQUESTS,
 } from "@website/types/mySpace";
-
-function RevealSection({
-  children,
-  className = "",
-}: {
-  children: ReactNode;
-  className?: string;
-}) {
-  const ref = useRef<HTMLElement>(null);
-  const [visible, setVisible] = useState(false);
-
-  useEffect(() => {
-    const el = ref.current;
-    if (!el) return;
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) {
-          setVisible(true);
-          observer.disconnect();
-        }
-      },
-      { threshold: 0.08, rootMargin: "0px 0px -40px 0px" },
-    );
-    observer.observe(el);
-    return () => observer.disconnect();
-  }, []);
-
-  return (
-    <section
-      ref={ref}
-      className={`transition-all duration-1000 ease-out ${
-        visible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
-      } ${className}`}
-    >
-      {children}
-    </section>
-  );
-}
 
 function TimelineStep({
   step,
@@ -105,7 +69,7 @@ function ActiveVerificationCard({ request }: { request: VerificationRequest }) {
   const progress = request.progress ?? 66;
 
   return (
-    <div className="bg-surface-container-lowest p-6 md:p-8 rounded-2xl shadow-sm border border-mist-grey/50 hover:shadow-md transition-shadow">
+    <div className="bg-surface-container-lowest p-6 md:p-8 rounded-2xl shadow-sm border border-mist-grey/50 site-card-hover">
       <div className="flex flex-col md:flex-row md:items-start md:justify-between items-start gap-4 mb-10">
         <div className="text-right flex-1 min-w-0">
           <h3 className="font-headline-sm text-xl text-primary mb-1">
@@ -140,7 +104,7 @@ function ActiveVerificationCard({ request }: { request: VerificationRequest }) {
 
 function CompletedVerificationCard({ request }: { request: VerificationRequest }) {
   return (
-    <div className="bg-surface-container-lowest p-6 rounded-2xl shadow-sm border border-mist-grey/30 opacity-90 hover:opacity-100 transition-opacity">
+    <div className="bg-surface-container-lowest p-6 rounded-2xl shadow-sm border border-mist-grey/30 opacity-90 hover:opacity-100 transition-opacity site-card-hover">
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between items-start gap-4">
         <div className="flex items-center gap-5">
           <div className="w-14 h-14 bg-success-teal/10 text-success-teal rounded-xl flex items-center justify-center shrink-0">
@@ -181,54 +145,56 @@ export default function MySpace() {
   return (
     <div className="max-w-container-max mx-auto" dir="rtl">
       {/* إشعارات عاجلة */}
-      <section className="mb-8">
-        <div className="relative overflow-hidden bg-[#121212] border border-gold-metallic-start/50 rounded-2xl p-4 shadow-[0_0_15px_rgba(212,175,55,0.2)]">
-          <div className="absolute inset-0 bg-gradient-to-l from-gold-metallic-start/5 via-transparent to-transparent" />
-          <div className="relative z-10 flex flex-col md:flex-row items-center justify-between gap-4">
-            <div className="flex items-center gap-4 w-full md:w-auto">
-              <div className="w-10 h-10 bg-gold-metallic-start/20 rounded-full flex items-center justify-center animate-pulse shrink-0">
-                <span
-                  className="material-symbols-outlined text-gold-metallic-start"
-                  style={{ fontVariationSettings: "'FILL' 1" }}
-                >
-                  warning
-                </span>
-              </div>
-              <div className="text-right flex-1 min-w-0">
-                <h2 className="text-gold-metallic-start font-label-bold text-sm">
-                  إشعارات عاجلة
-                </h2>
-                <div className="space-y-1 mt-1">
-                  {MY_SPACE_ALERTS.map((alert, i) => (
-                    <p
-                      key={alert}
-                      className={`text-xs flex items-start gap-2 text-right ${
-                        i === 0 ? "text-white" : "text-white/80"
-                      }`}
-                    >
-                      <span
-                        className={`w-1.5 h-1.5 rounded-full shrink-0 mt-1.5 ${
-                          i === 0 ? "bg-gold-metallic-start" : "bg-white/20"
+      <EnterItem index={0}>
+        <section className="mb-8">
+          <div className="relative overflow-hidden bg-[#121212] border border-gold-metallic-start/50 rounded-2xl p-4 shadow-[0_0_15px_rgba(212,175,55,0.2)]">
+            <div className="absolute inset-0 bg-gradient-to-l from-gold-metallic-start/5 via-transparent to-transparent" />
+            <div className="relative z-10 flex flex-col md:flex-row items-center justify-between gap-4">
+              <div className="flex items-center gap-4 w-full md:w-auto">
+                <div className="w-10 h-10 bg-gold-metallic-start/20 rounded-full flex items-center justify-center animate-pulse shrink-0">
+                  <span
+                    className="material-symbols-outlined text-gold-metallic-start"
+                    style={{ fontVariationSettings: "'FILL' 1" }}
+                  >
+                    warning
+                  </span>
+                </div>
+                <div className="text-right flex-1 min-w-0">
+                  <h2 className="text-gold-metallic-start font-label-bold text-sm">
+                    إشعارات عاجلة
+                  </h2>
+                  <div className="space-y-1 mt-1">
+                    {MY_SPACE_ALERTS.map((alert, i) => (
+                      <p
+                        key={alert}
+                        className={`text-xs flex items-start gap-2 text-right ${
+                          i === 0 ? "text-white" : "text-white/80"
                         }`}
-                      />
-                      <span className="flex-1">{alert}</span>
-                    </p>
-                  ))}
+                      >
+                        <span
+                          className={`w-1.5 h-1.5 rounded-full shrink-0 mt-1.5 ${
+                            i === 0 ? "bg-gold-metallic-start" : "bg-white/20"
+                          }`}
+                        />
+                        <span className="flex-1">{alert}</span>
+                      </p>
+                    ))}
+                  </div>
                 </div>
               </div>
+              <Link
+                to={WEBSITE_ROUTES.VERIFIED_NEWS}
+                className="px-4 py-1.5 bg-gold-metallic-start text-white text-[11px] font-bold rounded-lg hover:bg-gold-metallic-end transition-colors shrink-0 self-end md:self-center site-btn-shine"
+              >
+                عرض التفاصيل
+              </Link>
             </div>
-            <Link
-              to={WEBSITE_ROUTES.VERIFIED_NEWS}
-              className="px-4 py-1.5 bg-gold-metallic-start text-white text-[11px] font-bold rounded-lg hover:bg-gold-metallic-end transition-colors shrink-0 self-end md:self-center"
-            >
-              عرض التفاصيل
-            </Link>
           </div>
-        </div>
-      </section>
+        </section>
+      </EnterItem>
 
       {/* بطاقة الترحيب */}
-      <RevealSection className="mb-12">
+      <RevealOnScroll as="section" className="mb-12">
         <div className="relative overflow-hidden bg-[#121212] rounded-2xl p-8 md:p-12 shadow-2xl hero-pattern">
           <div className="absolute inset-0 bg-gradient-to-br from-gold-metallic-start/10 via-transparent to-primary/80" />
           <div className="relative z-10 flex flex-col lg:flex-row lg:items-center lg:justify-between items-center gap-10">
@@ -283,14 +249,16 @@ export default function MySpace() {
             </div>
           </div>
         </div>
-      </RevealSection>
+      </RevealOnScroll>
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-gutter">
         {/* العمود الرئيسي */}
         <div className="lg:col-span-8 space-y-12">
-          <RevealSection>
+          <RevealOnScroll as="section">
             <div className="flex justify-between items-center mb-8">
-              <h2 className="font-headline-sm text-primary">تتبع طلبات التحقق</h2>
+              <h2 className="font-headline-sm text-primary site-section-title site-section-title-visible">
+                تتبع طلبات التحقق
+              </h2>
               <Link
                 to={WEBSITE_ROUTES.VERIFICATION_IMAGE}
                 className="text-gold-metallic-start font-label-bold text-label-bold flex items-center gap-1 hover:underline shrink-0"
@@ -302,16 +270,24 @@ export default function MySpace() {
               </Link>
             </div>
             <div className="space-y-6">
-              {activeRequest && <ActiveVerificationCard request={activeRequest} />}
-              {completedRequests.map((request) => (
-                <CompletedVerificationCard key={request.id} request={request} />
+              {activeRequest && (
+                <StaggerReveal index={0}>
+                  <ActiveVerificationCard request={activeRequest} />
+                </StaggerReveal>
+              )}
+              {completedRequests.map((request, index) => (
+                <StaggerReveal key={request.id} index={activeRequest ? index + 1 : index}>
+                  <CompletedVerificationCard request={request} />
+                </StaggerReveal>
               ))}
             </div>
-          </RevealSection>
+          </RevealOnScroll>
 
-          <RevealSection>
+          <RevealOnScroll as="section">
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8">
-              <h2 className="font-headline-sm text-primary">مكتبتي الخاصة</h2>
+              <h2 className="font-headline-sm text-primary site-section-title site-section-title-visible">
+                مكتبتي الخاصة
+              </h2>
               <div className="flex p-1 bg-surface-container-low rounded-xl border border-mist-grey w-fit">
                 {LIBRARY_FILTERS.map((filter) => (
                   <button
@@ -330,63 +306,64 @@ export default function MySpace() {
               </div>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-              {filteredLibrary.map((item) => (
-                <article
-                  key={item.id}
-                  className="group bg-surface-container-lowest rounded-2xl overflow-hidden border border-mist-grey/50 shadow-sm hover:shadow-xl transition-all duration-300"
-                >
-                  <div className="relative aspect-[16/10] overflow-hidden">
-                    <img
-                      alt={item.title}
-                      className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
-                      src={item.image}
-                      loading="lazy"
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-t from-primary/80 to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex items-end p-6">
-                      <Link
-                        to={
-                          item.type === "podcast"
-                            ? WEBSITE_ROUTES.PODCASTS
-                            : WEBSITE_ROUTES.REPORTS_INVESTIGATIVE
-                        }
-                        className="w-full py-3 bg-gold-metallic-start text-white font-bold rounded-lg flex items-center justify-center gap-2 translate-y-4 group-hover:translate-y-0 transition-transform"
-                      >
-                        <span className="material-symbols-outlined text-[20px]">
-                          {item.actionIcon}
+              {filteredLibrary.map((item, index) => (
+                <StaggerReveal key={item.id} index={index}>
+                  <article className="group bg-surface-container-lowest rounded-2xl overflow-hidden border border-mist-grey/50 shadow-sm site-card-hover">
+                    <div className="relative aspect-[16/10] overflow-hidden">
+                      <img
+                        alt={item.title}
+                        className="w-full h-full object-cover site-card-image"
+                        src={item.image}
+                        loading="lazy"
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-t from-primary/80 to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex items-end p-6">
+                        <Link
+                          to={
+                            item.type === "podcast"
+                              ? WEBSITE_ROUTES.PODCASTS
+                              : WEBSITE_ROUTES.REPORTS_INVESTIGATIVE
+                          }
+                          className="w-full py-3 bg-gold-metallic-start text-white font-bold rounded-lg flex items-center justify-center gap-2 translate-y-4 group-hover:translate-y-0 transition-transform site-btn-shine"
+                        >
+                          <span className="material-symbols-outlined text-[20px]">
+                            {item.actionIcon}
+                          </span>
+                          {item.actionLabel}
+                        </Link>
+                      </div>
+                      <div className="absolute top-4 right-4">
+                        <span
+                          className={`${item.badgeClass} backdrop-blur-md text-white text-[10px] font-bold px-3 py-1.5 rounded-full shadow-lg`}
+                        >
+                          {item.badge}
                         </span>
-                        {item.actionLabel}
-                      </Link>
+                      </div>
                     </div>
-                    <div className="absolute top-4 right-4">
-                      <span
-                        className={`${item.badgeClass} backdrop-blur-md text-white text-[10px] font-bold px-3 py-1.5 rounded-full shadow-lg`}
-                      >
-                        {item.badge}
-                      </span>
+                    <div className="p-6 text-right">
+                      <h3 className="font-headline-sm text-xl text-primary leading-tight group-hover:text-gold-metallic-start transition-colors">
+                        {item.title}
+                      </h3>
+                      <p className="text-on-surface-variant text-sm mt-3 flex items-center justify-end gap-2">
+                        <span>{item.category}</span>
+                        <span className="w-1 h-1 bg-outline rounded-full" />
+                        <span>{item.meta}</span>
+                      </p>
                     </div>
-                  </div>
-                  <div className="p-6 text-right">
-                    <h3 className="font-headline-sm text-xl text-primary leading-tight group-hover:text-gold-metallic-start transition-colors">
-                      {item.title}
-                    </h3>
-                    <p className="text-on-surface-variant text-sm mt-3 flex items-center justify-end gap-2">
-                      <span>{item.category}</span>
-                      <span className="w-1 h-1 bg-outline rounded-full" />
-                      <span>{item.meta}</span>
-                    </p>
-                  </div>
-                </article>
+                  </article>
+                </StaggerReveal>
               ))}
             </div>
-          </RevealSection>
+          </RevealOnScroll>
         </div>
 
         {/* الشريط الجانبي */}
         <div className="lg:col-span-4 space-y-gutter">
-          <RevealSection>
+          <RevealOnScroll as="section" direction="left">
             <div className="glass-panel p-8 rounded-2xl shadow-sm border border-mist-grey">
               <div className="flex items-center gap-3 mb-8">
-                <h2 className="font-headline-sm text-xl">تقدم التعلم</h2>
+                <h2 className="font-headline-sm text-xl site-section-title site-section-title-visible">
+                  تقدم التعلم
+                </h2>
                 <div className="w-10 h-10 bg-gold-metallic-start/10 text-gold-metallic-start rounded-lg flex items-center justify-center shrink-0">
                   <span className="material-symbols-outlined">school</span>
                 </div>
@@ -408,7 +385,7 @@ export default function MySpace() {
                     </div>
                     <Link
                       to={WEBSITE_ROUTES.MEDIA_LITERACY}
-                      className="w-full mt-6 py-2.5 bg-primary text-white font-bold text-xs rounded-lg hover:bg-gold-metallic-start transition-colors shadow-md text-center"
+                      className="w-full mt-6 py-2.5 bg-primary text-white font-bold text-xs rounded-lg hover:bg-gold-metallic-start transition-colors shadow-md text-center site-btn-shine"
                     >
                       متابعة الدورة
                     </Link>
@@ -423,14 +400,17 @@ export default function MySpace() {
                 )}
               </div>
             </div>
-          </RevealSection>
+          </RevealOnScroll>
 
-          <RevealSection>
+          <RevealOnScroll as="section" direction="left" delay={100}>
             <div className="bg-surface-container-low p-8 rounded-2xl border border-mist-grey/50">
-              <h2 className="font-headline-sm text-xl mb-8 text-right">آخر النشاطات</h2>
+              <h2 className="font-headline-sm text-xl mb-8 text-right site-section-title site-section-title-visible">
+                آخر النشاطات
+              </h2>
               <div className="relative space-y-10 before:absolute before:right-5 before:top-2 before:bottom-2 before:w-[2px] before:bg-mist-grey">
-                {ACTIVITY_FEED.map((activity) => (
-                  <div key={activity.id} className="relative pr-14 group">
+                {ACTIVITY_FEED.map((activity, index) => (
+                  <StaggerReveal key={activity.id} index={index}>
+                    <div className="relative pr-14 group">
                     <div
                       className={`absolute right-0 top-1 w-10 h-10 rounded-xl flex items-center justify-center z-10 shadow-lg group-hover:scale-110 transition-transform ${
                         activity.filled
@@ -457,7 +437,8 @@ export default function MySpace() {
                         {activity.time}
                       </p>
                     </div>
-                  </div>
+                    </div>
+                  </StaggerReveal>
                 ))}
               </div>
               <button
@@ -468,7 +449,7 @@ export default function MySpace() {
                 <span className="material-symbols-outlined text-sm">expand_more</span>
               </button>
             </div>
-          </RevealSection>
+          </RevealOnScroll>
         </div>
       </div>
     </div>

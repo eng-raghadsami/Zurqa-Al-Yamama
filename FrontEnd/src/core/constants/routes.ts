@@ -55,5 +55,43 @@ export const ADMIN_ROUTES = {
   SETTINGS: "/admin/settings",
 } as const;
 
+/** Use for links that do not have a page yet */
+export const PLACEHOLDER_ROUTE = "#" as const;
+
+const IMPLEMENTED_ROUTE_PATHS = new Set<string>([
+  WEBSITE_ROUTES.HOME,
+  WEBSITE_ROUTES.REPORTS_INVESTIGATIVE,
+  WEBSITE_ROUTES.STORIES_HUMANITARIAN,
+  WEBSITE_ROUTES.VISUALS,
+  WEBSITE_ROUTES.PODCASTS,
+  WEBSITE_ROUTES.VERIFICATION_IMAGE,
+  WEBSITE_ROUTES.VERIFICATION_VIDEO,
+  WEBSITE_ROUTES.MEDIA_LITERACY,
+  WEBSITE_ROUTES.MEDIA_TERMINOLOGY,
+  WEBSITE_ROUTES.VERIFIED_NEWS,
+  WEBSITE_ROUTES.MY_SPACE,
+  WEBSITE_ROUTES.EDITOR_SPACE,
+  WEBSITE_ROUTES.EDITOR_DISINFORMATION_ARCHIVE,
+  ADMIN_ROUTES.ROOT,
+]);
+
+export function isImplementedRoute(path: string): boolean {
+  if (!path || path === PLACEHOLDER_ROUTE) return false;
+
+  const basePath = path.split("#")[0] ?? path;
+
+  if (IMPLEMENTED_ROUTE_PATHS.has(basePath)) return true;
+
+  return (
+    basePath.startsWith(`${WEBSITE_ROUTES.VERIFIED_NEWS}/`) &&
+    basePath.length > WEBSITE_ROUTES.VERIFIED_NEWS.length + 1
+  );
+}
+
+/** Returns the route when implemented, otherwise `#` */
+export function routeOrPlaceholder(path: string): string {
+  return isImplementedRoute(path) ? path : PLACEHOLDER_ROUTE;
+}
+
 export type WebsiteRoute = (typeof WEBSITE_ROUTES)[keyof typeof WEBSITE_ROUTES];
 export type AdminRoute = (typeof ADMIN_ROUTES)[keyof typeof ADMIN_ROUTES];

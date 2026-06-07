@@ -1,3 +1,4 @@
+import { PageEnter } from "@shared/components/animations";
 import { Outlet } from "react-router-dom";
 import TopNav from "@website/components/TopNav";
 import PodcastAudioPlayer from "@website/components/PodcastAudioPlayer";
@@ -11,7 +12,9 @@ export default function PodcastsLayout() {
       <div className="flex w-full max-w-container-max mx-auto pt-20">
         <PodcastSidebar />
         <div className="w-full lg:pr-72 pb-44 lg:pb-32">
-          <Outlet />
+          <PageEnter>
+            <Outlet />
+          </PageEnter>
         </div>
       </div>
       <SidebarBottomNav className="bottom-24" />

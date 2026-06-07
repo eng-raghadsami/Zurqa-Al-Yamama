@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { WEBSITE_ROUTES } from "@core/constants/routes";
+import { PLACEHOLDER_ROUTE, WEBSITE_ROUTES } from "@core/constants/routes";
 
 export default function VisualsFooter() {
   return (
@@ -45,9 +45,12 @@ export default function VisualsFooter() {
                 </Link>
               </li>
               <li>
-                <a className="hover:text-gold-metallic-start transition-colors" href="#">
+                <Link
+                  className="hover:text-gold-metallic-start transition-colors"
+                  to={WEBSITE_ROUTES.VERIFICATION_IMAGE}
+                >
                   مراقب الحقائق
-                </a>
+                </Link>
               </li>
             </ul>
           </div>
@@ -57,22 +60,22 @@ export default function VisualsFooter() {
             </h4>
             <ul className="space-y-4 text-white/60 font-body-md">
               <li>
-                <a className="hover:text-gold-metallic-start transition-colors" href="#">
+                <a className="hover:text-gold-metallic-start transition-colors" href={PLACEHOLDER_ROUTE}>
                   من نحن
                 </a>
               </li>
               <li>
-                <a className="hover:text-gold-metallic-start transition-colors" href="#">
+                <a className="hover:text-gold-metallic-start transition-colors" href={PLACEHOLDER_ROUTE}>
                   فريق العمل
                 </a>
               </li>
               <li>
-                <a className="hover:text-gold-metallic-start transition-colors" href="#">
+                <a className="hover:text-gold-metallic-start transition-colors" href={PLACEHOLDER_ROUTE}>
                   سياسة الخصوصية
                 </a>
               </li>
               <li>
-                <a className="hover:text-gold-metallic-start transition-colors" href="#">
+                <a className="hover:text-gold-metallic-start transition-colors" href={PLACEHOLDER_ROUTE}>
                   تواصل معنا
                 </a>
               </li>
@@ -105,13 +108,13 @@ export default function VisualsFooter() {
             © {new Date().getFullYear()} زرقاء اليمامة. جميع الحقوق محفوظة.
           </p>
           <div className="flex items-center gap-6">
-            <a className="text-white/40 hover:text-white transition-colors" href="#">
+            <a className="text-white/40 hover:text-white transition-colors" href={PLACEHOLDER_ROUTE}>
               <span className="material-symbols-outlined text-lg">language</span>
             </a>
-            <a className="text-white/40 hover:text-white transition-colors" href="#">
+            <a className="text-white/40 hover:text-white transition-colors" href={PLACEHOLDER_ROUTE}>
               <span className="material-symbols-outlined text-lg">public</span>
             </a>
-            <a className="text-white/40 hover:text-white transition-colors" href="#">
+            <a className="text-white/40 hover:text-white transition-colors" href={PLACEHOLDER_ROUTE}>
               <span className="material-symbols-outlined text-lg">share</span>
             </a>
           </div>

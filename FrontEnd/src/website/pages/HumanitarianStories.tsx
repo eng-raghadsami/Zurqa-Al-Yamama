@@ -1,4 +1,6 @@
 import { useEffect } from "react";
+import RevealOnScroll from "@shared/components/RevealOnScroll";
+import { EnterItem, StaggerReveal } from "@shared/components/animations";
 
 const STORY_CARDS = [
   {
@@ -77,40 +79,51 @@ export default function HumanitarianStories() {
 
   return (
     <main className="py-10">
-      <section className="mb-section-gap relative group px-margin-desktop lg:px-0">
+      <section className="mb-section-gap relative px-margin-desktop lg:px-0">
         <div className="relative w-full h-[500px] overflow-hidden rounded-xl shadow-2xl">
           <img
             alt="قصة مميزة"
-            className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+            className="w-full h-full object-cover site-hero-ken-burns"
             src="https://lh3.googleusercontent.com/aida-public/AB6AXuA39hY2wakji6A_mbuWF2uhyOcIsrz1ENSqxunnwv1kqIqPU2GV4QixYsSK2RsbHtsrQXrCYqvPF9wO7P1d3rEXzkB83HZEjy4L5mHRo7K2y36yHX50jP76oQLS86Q3uf4_VkBz5nUKHlSvE2qe40-9t9t2rfNI6h1NHsXpDlYid-7c9Xwm1a9S0s9TMFWHaZ5HAvRR7IyFDyBwU3tefwoiR5NsdCeSxQe_65m7YUN3oIOJozPhaHTpgGaEsWG9y9SQyUdg_IJRzyxM"
           />
           <div className="absolute inset-0 bg-gradient-to-t from-primary/90 via-primary/30 to-transparent" />
-          <div className="absolute bottom-0 right-0 p-12 max-w-2xl text-white">
-            <span className="bg-gold-metallic-start text-white text-[12px] font-label-bold px-3 py-1 rounded-sm uppercase tracking-wider mb-4 inline-block">
-              قصة مميزة
-            </span>
-            <h1 className="font-display-lg text-display-lg-mobile md:text-display-lg mb-4">
-              نور في العتمة: كيف أعاد المجتمع بناء مدرسته من الركام
-            </h1>
-            <p className="text-body-lg text-mist-grey/90 mb-8 leading-relaxed">
-              في قلب قرية منسية، اجتمع الأهالي بروح لا تعرف اليأس، ليرسموا
-              ملامح مستقبل مشرق لأطفالهم، متحدين الصعاب وقوة الإحباط.
-            </p>
-            <button
-              type="button"
-              className="bg-white text-primary font-label-bold px-8 py-4 rounded-sm flex items-center gap-3 hover:bg-gold-metallic-start hover:text-white transition-all transform hover:-translate-y-1"
-            >
-              اقرأ القصة كاملة
-              <span className="material-symbols-outlined">arrow_back</span>
-            </button>
+          <div className="absolute bottom-0 right-0 p-12 max-w-2xl text-white site-hero-overlay-enter">
+            <EnterItem index={0}>
+              <span className="bg-gold-metallic-start text-white text-[12px] font-label-bold px-3 py-1 rounded-sm uppercase tracking-wider mb-4 inline-block">
+                قصة مميزة
+              </span>
+            </EnterItem>
+            <EnterItem index={1}>
+              <h1 className="font-display-lg text-display-lg-mobile md:text-display-lg mb-4">
+                نور في العتمة: كيف أعاد المجتمع بناء مدرسته من الركام
+              </h1>
+            </EnterItem>
+            <EnterItem index={2}>
+              <p className="text-body-lg text-mist-grey/90 mb-8 leading-relaxed">
+                في قلب قرية منسية، اجتمع الأهالي بروح لا تعرف اليأس، ليرسموا
+                ملامح مستقبل مشرق لأطفالهم، متحدين الصعاب وقوة الإحباط.
+              </p>
+            </EnterItem>
+            <EnterItem index={3}>
+              <button
+                type="button"
+                className="bg-white text-primary font-label-bold px-8 py-4 rounded-sm flex items-center gap-3 hover:bg-gold-metallic-start hover:text-white transition-all transform hover:-translate-y-1 site-btn-shine"
+              >
+                اقرأ القصة كاملة
+                <span className="material-symbols-outlined">arrow_back</span>
+              </button>
+            </EnterItem>
           </div>
         </div>
       </section>
 
       <div className="grid grid-cols-1 xl:grid-cols-12 gap-8 px-margin-desktop lg:px-0">
         <div className="xl:col-span-8">
-          <div className="flex items-center justify-between mb-8">
-            <h2 className="font-headline-md text-headline-md border-r-4 border-gold-metallic-start pr-4">
+          <RevealOnScroll
+            direction="up"
+            className="flex items-center justify-between mb-8"
+          >
+            <h2 className="font-headline-md text-headline-md border-r-4 border-gold-metallic-start pr-4 site-section-title site-section-title-visible">
               القصص الإنسانية والاجتماعية
             </h2>
             <div className="flex gap-2">
@@ -127,18 +140,20 @@ export default function HumanitarianStories() {
                 <span className="material-symbols-outlined">view_list</span>
               </button>
             </div>
-          </div>
+          </RevealOnScroll>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {STORY_CARDS.map((story) => (
-              <article
+            {STORY_CARDS.map((story, index) => (
+              <StaggerReveal
                 key={story.title}
-                className="bg-surface-container-lowest rounded-sm overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 border border-transparent hover:border-gold-metallic-start group"
+                as="article"
+                index={index}
+                className="group site-card-hover bg-surface-container-lowest rounded-sm overflow-hidden shadow-sm border border-transparent hover:border-gold-metallic-start"
               >
                 <div className="relative h-56 overflow-hidden">
                   <img
                     alt={story.alt}
-                    className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                    className="w-full h-full object-cover site-card-image"
                     src={story.image}
                   />
                   <div className="absolute top-4 right-4 flex gap-2">
@@ -177,22 +192,23 @@ export default function HumanitarianStories() {
                     </span>
                   </div>
                 </div>
-              </article>
+              </StaggerReveal>
             ))}
           </div>
 
-          <div className="mt-12 flex justify-center">
+          <RevealOnScroll direction="up" className="mt-12 flex justify-center">
             <button
               type="button"
-              className="bg-primary text-white font-label-bold px-10 py-3 rounded-sm flex items-center gap-2 hover:bg-gold-metallic-start transition-all"
+              className="bg-primary text-white font-label-bold px-10 py-3 rounded-sm flex items-center gap-2 hover:bg-gold-metallic-start transition-all site-btn-shine"
             >
               تحميل المزيد من القصص
               <span className="material-symbols-outlined">expand_more</span>
             </button>
-          </div>
+          </RevealOnScroll>
         </div>
 
         <aside className="xl:col-span-4 space-y-8">
+          <RevealOnScroll direction="left">
           <div className="bg-surface-container-low p-6 rounded-xl shadow-sm">
             <h3 className="font-label-bold text-on-surface mb-4">
               بحث في القصص
@@ -218,7 +234,9 @@ export default function HumanitarianStories() {
               ))}
             </div>
           </div>
+          </RevealOnScroll>
 
+          <RevealOnScroll direction="left" delay={100}>
           <div className="glass-panel p-8 rounded-xl border-t-4 border-gold-metallic-start shadow-lg">
             <div className="flex items-center gap-2 mb-6">
               <span className="material-symbols-outlined text-gold-metallic-start">
@@ -255,7 +273,9 @@ export default function HumanitarianStories() {
               ))}
             </div>
           </div>
+          </RevealOnScroll>
 
+          <RevealOnScroll direction="left" delay={200}>
           <div className="bg-primary p-8 rounded-xl text-white relative overflow-hidden shadow-2xl">
             <div className="absolute top-0 left-0 w-32 h-32 bg-gold-metallic-start/10 rounded-full -translate-x-16 -translate-y-16" />
             <div className="relative z-10">
@@ -279,12 +299,13 @@ export default function HumanitarianStories() {
               </p>
               <button
                 type="button"
-                className="w-full bg-gold-metallic-start py-4 rounded-sm font-label-bold text-primary hover:bg-white transition-all transform active:scale-95 shadow-lg"
+                className="w-full bg-gold-metallic-start py-4 rounded-sm font-label-bold text-primary hover:bg-white transition-all transform active:scale-95 shadow-lg site-btn-shine"
               >
                 ابدأ التحليل الآن
               </button>
             </div>
           </div>
+          </RevealOnScroll>
         </aside>
       </div>
     </main>

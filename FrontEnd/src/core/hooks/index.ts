@@ -6,3 +6,6 @@
 
 export { useCountUp } from "./useCountUp";
 export type { UseCountUpOptions } from "./useCountUp";
+export { useInViewReveal } from "./useInViewReveal";
+export type { UseInViewRevealOptions } from "./useInViewReveal";
+export { useReducedMotion } from "./useReducedMotion";

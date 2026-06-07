@@ -1,5 +1,8 @@
 import { Link, useLocation } from "react-router-dom";
-import { WEBSITE_ROUTES } from "@core/constants/routes";
+import {
+  PLACEHOLDER_ROUTE,
+  WEBSITE_ROUTES,
+} from "@core/constants/routes";
 import { SIDEBAR_LOGO } from "@website/constants/brand";
 
 type NavItem = {
@@ -16,7 +19,7 @@ const navItems: NavItem[] = [
   {
     label: "لوحة التحكم",
     icon: "dashboard",
-    href: "#",
+    href: PLACEHOLDER_ROUTE,
     match: "/editor-space/dashboard",
     external: true,
   },
@@ -38,14 +41,13 @@ const navItems: NavItem[] = [
   {
     label: "التقارير التحليلية",
     icon: "analytics",
-    href: "#",
-    match: "",
-    external: true,
+    href: WEBSITE_ROUTES.REPORTS_INVESTIGATIVE,
+    match: "/reports",
   },
   {
     label: "السجل",
     icon: "history",
-    href: "#",
+    href: PLACEHOLDER_ROUTE,
     match: "",
     external: true,
   },
@@ -150,7 +152,7 @@ export default function EditorSidebar({
         <div className="mt-4 flex flex-col gap-1">
           <a
             className="flex flex-row-reverse items-center gap-3 px-4 py-2 text-sm text-on-surface-variant hover:text-primary"
-            href="#"
+            href={PLACEHOLDER_ROUTE}
           >
             <span className="material-symbols-outlined text-lg">settings</span>
             <span>الإعدادات</span>
