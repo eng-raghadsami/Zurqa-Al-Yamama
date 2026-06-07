@@ -1,8 +1,12 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, type RefObject } from "react";
 import { Link } from "react-router-dom";
 import { WEBSITE_ROUTES } from "@core/constants/routes";
+import { useCountUp } from "@core/hooks/useCountUp";
+import { useReducedMotion } from "@core/hooks/useReducedMotion";
+import RevealOnScroll from "@shared/components/RevealOnScroll";
+import { EnterItem, StaggerReveal } from "@shared/components/animations";
+import { formatStatValue } from "@shared/helpers/formatStatValue";
 import { SIDEBAR_LOGO } from "@website/constants/brand";
-
 const FILTERS = [
   "الكل",
   "استقصائية",
@@ -36,8 +40,36 @@ const IMPACT_REPORTS = [
   },
 ];
 
-export default function InvestigativeReports() {
-  const [activeFilter, setActiveFilter] =
+const INTEGRITY_TARGET = 91.4;
+
+function IntegrityMeter() {
+  const reducedMotion = useReducedMotion();
+  const { value, ref } = useCountUp(INTEGRITY_TARGET, {
+    decimals: 1,
+    duration: 2200,
+    enabled: !reducedMotion,
+  });
+  const display = reducedMotion ? INTEGRITY_TARGET : value;
+
+  return (
+    <div ref={ref as RefObject<HTMLDivElement>}>
+      <div className="flex items-center justify-between mb-2">
+        <span className="text-xs font-label-bold">متوسط نزاهة الشهر</span>
+        <span className="text-gold-metallic-end font-stats-number text-lg">
+          {formatStatValue(display, { decimals: 1, suffix: "%" })}
+        </span>
+      </div>
+      <div className="w-full h-2 bg-on-primary-container rounded-full overflow-hidden">
+        <div
+          className="h-full bg-gold-metallic-start site-progress-fill rounded-full"
+          style={{ width: `${display}%` }}
+        />
+      </div>
+    </div>
+  );
+}
+
+export default function InvestigativeReports() {  const [activeFilter, setActiveFilter] =
     useState<(typeof FILTERS)[number]>("الكل");
 
   useEffect(() => {
@@ -49,18 +81,22 @@ export default function InvestigativeReports() {
       <div className="px-margin-desktop py-12 mist-overlay">
         <section className="mb-16">
           <div className="max-w-4xl">
-            <h2 className="font-display-lg text-display-lg text-primary mb-6 leading-tight">
-              التقارير الاستقصائية
-            </h2>
-            <p className="font-body-lg text-body-lg text-on-surface-variant leading-relaxed max-w-3xl">
-              نغوص في أعماق البيانات لكشف زيف التلاعب الإعلامي. تقاريرنا تعتمد
-              على الذكاء الاصطناعي والتحليل الجنائي للوسائط لتقديم الحقيقة
-              المجردة من التحيزات والضجيج الرقمي.
-            </p>
+            <EnterItem index={0}>
+              <h2 className="font-display-lg text-display-lg text-primary mb-6 leading-tight site-section-title site-section-title-visible">
+                التقارير الاستقصائية
+              </h2>
+            </EnterItem>
+            <EnterItem index={1}>
+              <p className="font-body-lg text-body-lg text-on-surface-variant leading-relaxed max-w-3xl">
+                نغوص في أعماق البيانات لكشف زيف التلاعب الإعلامي. تقاريرنا تعتمد
+                على الذكاء الاصطناعي والتحليل الجنائي للوسائط لتقديم الحقيقة
+                المجردة من التحيزات والضجيج الرقمي.
+              </p>
+            </EnterItem>
           </div>
         </section>
 
-        <div className="flex flex-wrap items-center gap-4 mb-12 border-b border-mist-grey pb-6">
+        <RevealOnScroll direction="up" className="flex flex-wrap items-center gap-4 mb-12 border-b border-mist-grey pb-6">
           <span className="font-label-bold text-label-bold text-on-surface-variant ml-4">
             التصنيف:
           </span>
@@ -78,15 +114,19 @@ export default function InvestigativeReports() {
               {filter}
             </button>
           ))}
-        </div>
+        </RevealOnScroll>
 
         <div className="grid grid-cols-1 xl:grid-cols-12 gap-10">
           <div className="xl:col-span-8 space-y-10">
-            <article className="group bg-surface-container-lowest rounded-xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-500 border border-transparent hover:border-gold-metallic-start/30">
+            <StaggerReveal
+              as="article"
+              index={0}
+              className="group site-card-hover bg-surface-container-lowest rounded-xl overflow-hidden shadow-sm border border-transparent hover:border-gold-metallic-start/30"
+            >
               <div className="relative h-72 overflow-hidden">
                 <img
                   alt="غرفة عمليات سيبرانية مع شاشات متعددة"
-                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
+                  className="w-full h-full object-cover site-card-image"
                   src="https://lh3.googleusercontent.com/aida-public/AB6AXuBAAySVimBx1RqLRqsjYu56qWmEzu0zWnwcz2yljmo2WEYbsZq_OiRBMrm3LJKyZvVElu4qitOqXNhBpJujn8kgCXE7FI3l5pl-PES57qR7d9rsjqUQs8Riv9ysPIKverCCIrFYFC6TU1y0VH-IRX4qj_lr3pkxthVp6ETfmKqhFkGeP7_N0Wk2daMdddMGiKMcJcyX3w2XnNc7AgPvSOJRN0r5V5bFvbJBDMXYnLA7iFE4EGB4x5ryNII4ouCAiGhtgg3dRVy8hWDz"
                 />
                 <div className="absolute top-4 right-4 bg-primary px-4 py-1 rounded text-white font-label-bold text-xs">
@@ -127,20 +167,24 @@ export default function InvestigativeReports() {
                   </div>
                   <button
                     type="button"
-                    className="flex items-center gap-2 text-primary font-label-bold hover:gap-4 transition-all"
+                    className="flex items-center gap-2 text-primary font-label-bold hover:gap-4 transition-all site-btn-shine"
                   >
                     اقرأ التقرير الكامل
                     <span className="material-symbols-outlined">arrow_back</span>
                   </button>
                 </div>
               </div>
-            </article>
+            </StaggerReveal>
 
-            <article className="group bg-surface-container-lowest rounded-xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-500 border border-transparent hover:border-gold-metallic-start/30">
+            <StaggerReveal
+              as="article"
+              index={1}
+              className="group site-card-hover bg-surface-container-lowest rounded-xl overflow-hidden shadow-sm border border-transparent hover:border-gold-metallic-start/30"
+            >
               <div className="relative h-72 overflow-hidden">
                 <img
                   alt="تمثيل رقمي لشبكة أقمار صناعية حول الأرض"
-                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
+                  className="w-full h-full object-cover site-card-image"
                   src="https://lh3.googleusercontent.com/aida-public/AB6AXuDzEXoPPBDq_C0fNY3LvfKwi6ceZrAedD0Alg-FfWVdlxX0lqnQ1PLqHFA9d3bfR6Gb8uCzRuNNhxWODDqOncfD5x4Fv5VJB43SbgFG48VmpaTZiImFerUia9-ZPdnkhyCqmShcsMtzrtXDQrWtevdTQ3CpN5rJvfTtLpFtOdnVrrq1Vlv-kTEMhNiEqH4lnm30028nzobbHawChR1ij8EWzCIe4LLCcc-CjaFFc_jOH2GzhL_d_MUlKdjg3ibXs8iMeKWti14vGtuT"
                 />
                 <div className="absolute top-4 right-4 bg-primary px-4 py-1 rounded text-white font-label-bold text-xs">
@@ -184,17 +228,18 @@ export default function InvestigativeReports() {
                   </div>
                   <button
                     type="button"
-                    className="flex items-center gap-2 text-primary font-label-bold hover:gap-4 transition-all"
+                    className="flex items-center gap-2 text-primary font-label-bold hover:gap-4 transition-all site-btn-shine"
                   >
                     اقرأ التقرير الكامل
                     <span className="material-symbols-outlined">arrow_back</span>
                   </button>
                 </div>
               </div>
-            </article>
+            </StaggerReveal>
           </div>
 
           <aside className="xl:col-span-4 space-y-8">
+            <RevealOnScroll direction="left">
             <div className="bg-surface-container-low rounded-xl p-8 border border-mist-grey">
               <h3 className="font-headline-sm text-headline-sm text-primary mb-8 flex items-center gap-3">
                 <span
@@ -228,12 +273,14 @@ export default function InvestigativeReports() {
               </div>
               <button
                 type="button"
-                className="w-full mt-8 py-3 border border-primary text-primary font-label-bold rounded hover:bg-primary hover:text-white transition-all"
+                className="w-full mt-8 py-3 border border-primary text-primary font-label-bold rounded hover:bg-primary hover:text-white transition-all site-btn-shine"
               >
                 عرض قائمة الشرف كاملة
               </button>
             </div>
+            </RevealOnScroll>
 
+            <RevealOnScroll direction="left" delay={100}>
             <div className="bg-primary text-white rounded-xl p-8 shadow-xl relative overflow-hidden">
               <div className="relative z-10">
                 <h3 className="font-headline-sm text-headline-sm mb-4">
@@ -243,28 +290,16 @@ export default function InvestigativeReports() {
                   يتم فحص كل تقرير عبر محركنا المتطور للتحقق من الموثوقية
                   والمصادر.
                 </p>
-                <div className="flex items-center justify-between mb-2">
-                  <span className="text-xs font-label-bold">
-                    متوسط نزاهة الشهر
-                  </span>
-                  <span className="text-gold-metallic-end font-stats-number text-lg">
-                    ٩١.٤٪
-                  </span>
-                </div>
-                <div className="w-full h-2 bg-on-primary-container rounded-full overflow-hidden">
-                  <div
-                    className="h-full bg-gold-metallic-start"
-                    style={{ width: "91.4%" }}
-                  />
-                </div>
-              </div>
+                <IntegrityMeter />              </div>
               <div className="absolute -bottom-10 -left-10 opacity-10">
                 <span className="material-symbols-outlined text-[120px]">
                   shield_with_heart
                 </span>
               </div>
             </div>
+            </RevealOnScroll>
 
+            <RevealOnScroll direction="left" delay={200}>
             <div className="bg-surface-container-highest rounded-xl p-8 border border-mist-grey">
               <h3 className="font-label-bold text-primary mb-2">
                 اشترك في النشرة الاستقصائية
@@ -280,12 +315,13 @@ export default function InvestigativeReports() {
                 />
                 <button
                   type="button"
-                  className="w-full py-3 bg-tertiary text-white font-label-bold rounded hover:opacity-90 transition-opacity"
+                  className="w-full py-3 bg-tertiary text-white font-label-bold rounded hover:opacity-90 transition-opacity site-btn-shine"
                 >
                   اشتراك
                 </button>
               </div>
             </div>
+            </RevealOnScroll>
           </aside>
         </div>
       </div>

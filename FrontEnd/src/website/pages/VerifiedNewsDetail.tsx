@@ -1,6 +1,10 @@
+import { useState } from "react";
 import { Link, Navigate, useParams } from "react-router-dom";
 import { WEBSITE_ROUTES } from "@core/constants/routes";
+import RevealOnScroll from "@shared/components/RevealOnScroll";
+import { EnterItem, StaggerReveal } from "@shared/components/animations";
 import VerifiedNewsImage from "@website/components/VerifiedNewsImage";
+import { downloadVerifiedNewsReport } from "@website/helpers/downloadVerifiedNewsReport";
 import type { VerifiedNewsBodySection } from "@website/types/verifiedNews";
 import {
   NEWS_CATEGORY_LABELS,
@@ -49,6 +53,8 @@ function ArticleBody({ sections }: { sections: VerifiedNewsBodySection[] }) {
 export default function VerifiedNewsDetail() {
   const { slug } = useParams<{ slug: string }>();
   const article = slug ? getVerifiedNewsBySlug(slug) : undefined;
+  const [isDownloading, setIsDownloading] = useState(false);
+  const [downloadError, setDownloadError] = useState<string | null>(null);
 
   if (!article) {
     return <Navigate to={WEBSITE_ROUTES.VERIFIED_NEWS} replace />;
@@ -56,30 +62,48 @@ export default function VerifiedNewsDetail() {
 
   const related = getRelatedArticles(article);
 
-  return (
-    <main className="grid grid-cols-1 lg:grid-cols-12 gap-gutter">
-      <article className="lg:col-span-8 space-y-8">
-        <nav className="flex items-center gap-2 text-on-surface-variant font-label-bold text-label-bold flex-wrap">
-          <Link className="hover:text-primary transition-colors" to={WEBSITE_ROUTES.HOME}>
-            الرئيسية
-          </Link>
-          <span className="material-symbols-outlined text-[14px]">chevron_left</span>
-          <Link
-            className="hover:text-primary transition-colors"
-            to={WEBSITE_ROUTES.VERIFIED_NEWS}
-          >
-            الأخبار الموثقة
-          </Link>
-          <span className="material-symbols-outlined text-[14px]">chevron_left</span>
-          <span className="text-primary truncate max-w-[200px] md:max-w-md">
-            {article.title}
-          </span>
-        </nav>
+  const handleDownloadReport = async () => {
+    if (isDownloading) return;
 
-        <header className="space-y-4">
-          <h1 className="font-display-lg text-display-lg-mobile md:text-display-lg leading-tight text-primary">
-            {article.title}
-          </h1>
+    setIsDownloading(true);
+    setDownloadError(null);
+
+    try {
+      await downloadVerifiedNewsReport(article);
+    } catch {
+      setDownloadError("تعذّر إنشاء ملف PDF. يرجى المحاولة مرة أخرى.");
+    } finally {
+      setIsDownloading(false);
+    }
+  };
+
+  return (
+    <main className="grid grid-cols-1 gap-gutter lg:grid-cols-12">
+      <article className="space-y-8 lg:col-span-8">
+        <EnterItem index={0}>
+          <nav className="mb-2 flex flex-wrap items-center gap-2 border-b border-outline-variant/10 pb-5 font-label-bold text-label-bold text-on-surface-variant md:pb-6">
+            <Link className="hover:text-primary transition-colors" to={WEBSITE_ROUTES.HOME}>
+              الرئيسية
+            </Link>
+            <span className="material-symbols-outlined text-[14px]">chevron_left</span>
+            <Link
+              className="hover:text-primary transition-colors"
+              to={WEBSITE_ROUTES.VERIFIED_NEWS}
+            >
+              الأخبار الموثقة
+            </Link>
+            <span className="material-symbols-outlined text-[14px]">chevron_left</span>
+            <span className="text-primary truncate max-w-[200px] md:max-w-md">
+              {article.title}
+            </span>
+          </nav>
+        </EnterItem>
+
+        <RevealOnScroll>
+          <header className="space-y-4 pt-2 md:pt-4">
+            <h1 className="font-display-lg text-display-lg-mobile md:text-display-lg leading-tight text-primary site-section-title site-section-title-visible">
+              {article.title}
+            </h1>
           <div className="flex flex-wrap items-center gap-6 py-4 border-y border-outline-variant/10">
             {article.verifier && (
               <div className="flex items-center gap-2">
@@ -121,13 +145,15 @@ export default function VerifiedNewsDetail() {
             </div>
           </div>
         </header>
+        </RevealOnScroll>
 
-        <div className="relative group rounded-xl overflow-hidden shadow-xl bg-surface-container">
-          <VerifiedNewsImage
-            alt={article.title}
-            className="w-full h-[280px] md:h-[450px] object-cover transition-transform duration-700 group-hover:scale-105"
-            src={article.detailImage}
-          />
+        <RevealOnScroll delay={100}>
+          <div className="relative group rounded-xl overflow-hidden shadow-xl bg-surface-container">
+            <VerifiedNewsImage
+              alt={article.title}
+              className="w-full h-[280px] md:h-[450px] object-cover site-card-image"
+              src={article.detailImage}
+            />
           {article.trustBadge && (
             <div className="absolute top-6 right-6 glass-panel px-4 py-2 rounded-lg flex items-center gap-2">
               <div className="w-3 h-3 bg-gold-metallic-start rounded-full animate-pulse" />
@@ -136,10 +162,12 @@ export default function VerifiedNewsDetail() {
               </span>
             </div>
           )}
-        </div>
+          </div>
+        </RevealOnScroll>
 
-        <section className="glass-panel p-6 rounded-xl border-r-4 border-gold-metallic-start shadow-sm bg-mist-grey/20">
-          <h3 className="font-headline-sm text-headline-sm mb-4 flex items-center gap-2">
+        <RevealOnScroll>
+          <section className="glass-panel p-6 rounded-xl border-r-4 border-gold-metallic-start shadow-sm bg-mist-grey/20">
+            <h3 className="font-headline-sm text-headline-sm mb-4 flex items-center gap-2 site-section-title site-section-title-visible">
             <span className="material-symbols-outlined text-gold-metallic-start">
               insights
             </span>
@@ -172,29 +200,45 @@ export default function VerifiedNewsDetail() {
             </div>
           </div>
         </section>
+        </RevealOnScroll>
 
-        <ArticleBody sections={article.body} />
+        <RevealOnScroll>
+          <ArticleBody sections={article.body} />
+        </RevealOnScroll>
 
-        <footer className="pt-10 flex flex-wrap gap-4 border-t border-outline-variant/20">
-          <button
-            type="button"
-            className="bg-primary text-white px-8 py-3 rounded-lg font-label-bold text-label-bold hover:opacity-90 transition-all flex items-center gap-2"
-          >
-            <span className="material-symbols-outlined">download</span>
-            تحميل التقرير الكامل
-          </button>
-          <button
-            type="button"
-            className="border border-primary text-primary px-8 py-3 rounded-lg font-label-bold text-label-bold hover:bg-mist-grey transition-all flex items-center gap-2"
-          >
-            <span className="material-symbols-outlined">bookmark</span>
-            حفظ في الأرشيف
-          </button>
+        <footer className="relative z-10 space-y-3 border-t border-outline-variant/20 pt-10">
+          <div className="flex flex-wrap gap-4">
+            <button
+              type="button"
+              disabled={isDownloading}
+              onClick={handleDownloadReport}
+              aria-busy={isDownloading}
+              className="relative z-10 flex cursor-pointer items-center gap-2 rounded-lg bg-primary px-8 py-3 font-label-bold text-label-bold text-white transition-all hover:scale-[1.02] hover:opacity-90 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-60 site-btn-shine"
+            >
+              <span className="material-symbols-outlined pointer-events-none">
+                {isDownloading ? "hourglass_top" : "download"}
+              </span>
+              {isDownloading ? "جاري إعداد التقرير..." : "تحميل التقرير الكامل"}
+            </button>
+            <button
+              type="button"
+              className="flex cursor-pointer items-center gap-2 rounded-lg border border-primary px-8 py-3 font-label-bold text-label-bold text-primary transition-all hover:bg-mist-grey"
+            >
+              <span className="material-symbols-outlined">bookmark</span>
+              حفظ في الأرشيف
+            </button>
+          </div>
+          {downloadError && (
+            <p className="text-sm font-label-bold text-error" role="alert">
+              {downloadError}
+            </p>
+          )}
         </footer>
       </article>
 
       <aside className="lg:col-span-4 space-y-10">
-        <section className="glass-panel p-6 rounded-xl shadow-lg mist-bg border border-outline-variant/10">
+        <RevealOnScroll direction="left">
+          <section className="glass-panel p-6 rounded-xl shadow-lg mist-bg border border-outline-variant/10">
           <div className="flex items-center gap-3 mb-6">
             <div className="w-10 h-10 bg-primary rounded-full flex items-center justify-center">
               <span className="material-symbols-outlined text-white">psychology</span>
@@ -211,8 +255,9 @@ export default function VerifiedNewsDetail() {
               { label: "تحليل البيانات الوصفية", done: true },
               { label: "المطابقة المتقاطعة", active: true },
               { label: "اعتماد المراجع البشري", done: false },
-            ].map((step) => (
-              <div key={step.label} className="relative flex items-center gap-4">
+            ].map((step, index) => (
+              <StaggerReveal key={step.label} index={index}>
+                <div className="relative flex items-center gap-4">
                 <div
                   className={`z-10 w-6 h-6 rounded-full flex items-center justify-center ${
                     step.active
@@ -238,34 +283,37 @@ export default function VerifiedNewsDetail() {
                 >
                   {step.label}
                 </span>
-              </div>
+                </div>
+              </StaggerReveal>
             ))}
           </div>
           <button
             type="button"
-            className="w-full mt-8 bg-primary text-white py-3 rounded-lg text-label-bold font-label-bold hover:opacity-90 transition-opacity"
+            className="w-full mt-8 bg-primary text-white py-3 rounded-lg text-label-bold font-label-bold hover:opacity-90 transition-opacity site-btn-shine"
           >
             عرض السجل الكامل
           </button>
         </section>
+        </RevealOnScroll>
 
         {related.length > 0 && (
-          <section className="space-y-6">
-            <h4 className="font-label-bold text-label-bold border-b border-outline-variant/20 pb-2">
-              أخبار ذات صلة
-            </h4>
-            {related.map((item) => (
-              <Link
-                key={item.id}
-                className="block group"
-                to={WEBSITE_ROUTES.verifiedNewsDetail(item.slug)}
-              >
-                <div className="relative overflow-hidden rounded-lg aspect-video mb-3">
-                  <VerifiedNewsImage
-                    alt={item.title}
-                    className="w-full h-full object-cover transition-transform group-hover:scale-105"
-                    src={item.listImage}
-                  />
+          <RevealOnScroll direction="left" delay={100}>
+            <section className="space-y-6">
+              <h4 className="font-label-bold text-label-bold border-b border-outline-variant/20 pb-2 site-section-title site-section-title-visible">
+                أخبار ذات صلة
+              </h4>
+              {related.map((item, index) => (
+                <StaggerReveal key={item.id} index={index}>
+                  <Link
+                    className="block group site-card-hover"
+                    to={WEBSITE_ROUTES.verifiedNewsDetail(item.slug)}
+                  >
+                    <div className="relative overflow-hidden rounded-lg aspect-video mb-3">
+                      <VerifiedNewsImage
+                        alt={item.title}
+                        className="w-full h-full object-cover site-card-image"
+                        src={item.listImage}
+                      />
                   <div className="absolute top-2 right-2 bg-primary/90 text-white text-[10px] px-2 py-1 rounded font-bold">
                     موثق
                   </div>
@@ -275,11 +323,13 @@ export default function VerifiedNewsDetail() {
                 </h5>
                 <p className="text-xs text-on-surface-variant mt-1">
                   {item.relativeTime ?? item.publishedAt}
-                  {item.readMinutes ? ` • ${item.readMinutes} دقائق قراءة` : ""}
-                </p>
-              </Link>
-            ))}
-          </section>
+                    {item.readMinutes ? ` • ${item.readMinutes} دقائق قراءة` : ""}
+                  </p>
+                  </Link>
+                </StaggerReveal>
+              ))}
+            </section>
+          </RevealOnScroll>
         )}
       </aside>
     </main>

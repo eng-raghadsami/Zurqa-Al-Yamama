@@ -1,3 +1,9 @@
+import { Link } from "react-router-dom";
+import {
+  PLACEHOLDER_ROUTE,
+  WEBSITE_ROUTES,
+} from "@core/constants/routes";
+
 export default function Footer() {
   return (
     <footer className="w-full pt-16 pb-8 px-margin-mobile md:px-margin-desktop bg-primary border-t border-outline/30 mt-20 text-on-primary">
@@ -15,7 +21,7 @@ export default function Footer() {
             <div className="flex gap-4 mt-2">
               <a
                 className="w-10 h-10 rounded-full bg-on-primary/10 flex items-center justify-center hover:bg-secondary transition-colors"
-                href="#"
+                href={PLACEHOLDER_ROUTE}
               >
                 <img
                   alt="X"
@@ -25,7 +31,7 @@ export default function Footer() {
               </a>
               <a
                 className="w-10 h-10 rounded-full bg-on-primary/10 flex items-center justify-center hover:bg-secondary transition-colors"
-                href="#"
+                href={PLACEHOLDER_ROUTE}
               >
                 <img
                   alt="LinkedIn"
@@ -41,36 +47,36 @@ export default function Footer() {
               الأقسام الرئيسية
             </h4>
             <nav className="flex flex-col gap-3">
-              <a
+              <Link
                 className="text-on-primary/60 hover:text-on-primary transition-colors text-sm"
-                href="#"
+                to={WEBSITE_ROUTES.HOME}
               >
                 الرئيسية
-              </a>
-              <a
+              </Link>
+              <Link
                 className="text-on-primary/60 hover:text-on-primary transition-colors text-sm"
-                href="#"
+                to={WEBSITE_ROUTES.REPORTS_INVESTIGATIVE}
               >
                 التقارير الاستقصائية
-              </a>
-              <a
+              </Link>
+              <Link
                 className="text-on-primary/60 hover:text-on-primary transition-colors text-sm"
-                href="#"
+                to={WEBSITE_ROUTES.STORIES_HUMANITARIAN}
               >
                 قصص النزاهة
-              </a>
-              <a
+              </Link>
+              <Link
                 className="text-on-primary/60 hover:text-on-primary transition-colors text-sm"
-                href="#"
+                to={WEBSITE_ROUTES.VISUALS}
               >
                 المرئيات والبودكاست
-              </a>
-              <a
+              </Link>
+              <Link
                 className="text-on-primary/60 hover:text-on-primary transition-colors text-sm"
-                href="#"
+                to={WEBSITE_ROUTES.VERIFIED_NEWS}
               >
                 الأخبار الموثقة
-              </a>
+              </Link>
             </nav>
           </div>
 
@@ -79,36 +85,36 @@ export default function Footer() {
               التحقق والمعرفة
             </h4>
             <nav className="flex flex-col gap-3">
-              <a
+              <Link
                 className="text-on-primary/60 hover:text-on-primary transition-colors text-sm"
-                href="#"
+                to={WEBSITE_ROUTES.VERIFICATION_IMAGE}
               >
                 مركز التحقق الإعلامي
-              </a>
-              <a
+              </Link>
+              <Link
                 className="text-on-primary/60 hover:text-on-primary transition-colors text-sm"
-                href="#"
+                to={WEBSITE_ROUTES.MEDIA_TERMINOLOGY}
               >
                 موسوعة المصطلحات
-              </a>
-              <a
+              </Link>
+              <Link
                 className="text-on-primary/60 hover:text-on-primary transition-colors text-sm"
-                href="#"
+                to={WEBSITE_ROUTES.MEDIA_LITERACY}
               >
                 دليل المعرفة الإعلامية
-              </a>
+              </Link>
               <a
                 className="text-on-primary/60 hover:text-on-primary transition-colors text-sm"
-                href="#"
+                href={PLACEHOLDER_ROUTE}
               >
                 منهجية التحليل
               </a>
-              <a
+              <Link
                 className="text-on-primary/60 hover:text-on-primary transition-colors text-sm"
-                href="#"
+                to={WEBSITE_ROUTES.MY_SPACE}
               >
                 مساحتي الشخصية
-              </a>
+              </Link>
             </nav>
           </div>
 
@@ -140,19 +146,19 @@ export default function Footer() {
           <div className="flex gap-6">
             <a
               className="text-on-primary/40 hover:text-on-primary text-xs transition-colors"
-              href="#"
+              href={PLACEHOLDER_ROUTE}
             >
               سياسة الخصوصية
             </a>
             <a
               className="text-on-primary/40 hover:text-on-primary text-xs transition-colors"
-              href="#"
+              href={PLACEHOLDER_ROUTE}
             >
               شروط الاستخدام
             </a>
             <a
               className="text-on-primary/40 hover:text-on-primary text-xs transition-colors"
-              href="#"
+              href={PLACEHOLDER_ROUTE}
             >
               اتصل بنا
             </a>

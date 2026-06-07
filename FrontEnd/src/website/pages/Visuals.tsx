@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { WEBSITE_ROUTES } from "@core/constants/routes";
+import RevealOnScroll from "@shared/components/RevealOnScroll";
+import { EnterItem, StaggerReveal } from "@shared/components/animations";
 
 const CATEGORIES = [
   "الكل",
@@ -92,45 +94,53 @@ export default function Visuals() {
     <main className="max-w-container-max mx-auto px-margin-desktop py-8">
       <section className="relative w-full h-[600px] rounded-xl overflow-hidden mb-section-gap group">
         <div
-          className="absolute inset-0 bg-cover bg-center transition-transform duration-700 group-hover:scale-105"
+          className="absolute inset-0 bg-cover bg-center site-hero-ken-burns"
           style={{
             backgroundImage:
               "url('https://lh3.googleusercontent.com/aida-public/AB6AXuBKWRcjyXj5-pUCg3FS0OLCFVk58AGnHOuHrlrmaNcbmw99NKeg8_TR6qeKxFnV1KmY2sQApEsFqqGO58hoAg5VY0a9iBg6EGrlbASOVhLiZX8hFCWoD4uonxm-BnmcKQhBxdnWHpOCFVyTaOMIgxynvzLMx4SYuGadIJ0SkdZqwfVJlcPV8oI3zx54luZd7t_Wr0GzIsFOEXs6YgxKNxMloXSqLkkw0pVPMY__SWvYmmalGFWn44ExNFnMVtmK8wPgfvS0w_s9aG59')",
           }}
         />
         <div className="absolute inset-0 bg-gradient-to-t from-primary/90 via-primary/40 to-transparent" />
-        <div className="absolute bottom-0 right-0 p-12 w-full md:w-2/3 flex flex-col items-start gap-4">
-          <span className="px-3 py-1 bg-gold-metallic-start text-on-primary font-label-bold rounded">
-            فيلم مميز
-          </span>
-          <h1 className="font-display-lg text-display-lg text-white leading-tight">
-            ظل الحقيقة: تفكيك شبكات التزييف
-          </h1>
-          <p className="font-body-lg text-white/80 max-w-2xl">
-            رحلة استقصائية في عمق غرف عمليات التضليل الرقمي، كيف يتم صناعة
-            &quot;الواقع البديل&quot; ومن يقف خلفه؟
-          </p>
-          <div className="flex items-center gap-4 mt-4">
-            <button
-              type="button"
-              className="flex items-center gap-2 px-8 py-4 gold-gradient-bg text-primary font-label-bold rounded-lg shadow-xl hover:scale-105 transition-transform"
-            >
-              <span
-                className="material-symbols-outlined"
-                style={{ fontVariationSettings: "'FILL' 1" }}
+        <div className="absolute bottom-0 right-0 p-12 w-full md:w-2/3 flex flex-col items-start gap-4 site-hero-overlay-enter">
+          <EnterItem index={0}>
+            <span className="px-3 py-1 bg-gold-metallic-start text-on-primary font-label-bold rounded">
+              فيلم مميز
+            </span>
+          </EnterItem>
+          <EnterItem index={1}>
+            <h1 className="font-display-lg text-display-lg text-white leading-tight">
+              ظل الحقيقة: تفكيك شبكات التزييف
+            </h1>
+          </EnterItem>
+          <EnterItem index={2}>
+            <p className="font-body-lg text-white/80 max-w-2xl">
+              رحلة استقصائية في عمق غرف عمليات التضليل الرقمي، كيف يتم صناعة
+              &quot;الواقع البديل&quot; ومن يقف خلفه؟
+            </p>
+          </EnterItem>
+          <EnterItem index={3}>
+            <div className="flex items-center gap-4 mt-4">
+              <button
+                type="button"
+                className="flex items-center gap-2 px-8 py-4 gold-gradient-bg text-primary font-label-bold rounded-lg shadow-xl hover:scale-105 transition-transform site-btn-shine"
               >
-                play_arrow
-              </span>
-              شاهد الآن
-            </button>
-            <button
-              type="button"
-              className="flex items-center gap-2 px-8 py-4 glass text-white font-label-bold rounded-lg hover:bg-white/10 transition-all"
-            >
-              <span className="material-symbols-outlined">info</span>
-              التفاصيل
-            </button>
-          </div>
+                <span
+                  className="material-symbols-outlined"
+                  style={{ fontVariationSettings: "'FILL' 1" }}
+                >
+                  play_arrow
+                </span>
+                شاهد الآن
+              </button>
+              <button
+                type="button"
+                className="flex items-center gap-2 px-8 py-4 glass text-white font-label-bold rounded-lg hover:bg-white/10 transition-all"
+              >
+                <span className="material-symbols-outlined">info</span>
+                التفاصيل
+              </button>
+            </div>
+          </EnterItem>
         </div>
       </section>
 
@@ -154,15 +164,17 @@ export default function Visuals() {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-            {VIDEO_CARDS.map((video) => (
-              <article
+            {VIDEO_CARDS.map((video, i) => (
+              <StaggerReveal
                 key={video.title}
-                className="group bg-white rounded-xl overflow-hidden shadow-sm hover:shadow-lg transition-all duration-300"
+                index={i}
+                as="article"
+                className="group bg-white rounded-xl overflow-hidden shadow-sm site-card-hover"
               >
                 <div className="relative aspect-video overflow-hidden">
                   <img
                     alt={video.alt}
-                    className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                    className="w-full h-full object-cover site-card-image"
                     src={video.image}
                   />
                   <div className="absolute inset-0 bg-primary/20 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
@@ -196,7 +208,7 @@ export default function Visuals() {
                     {video.excerpt}
                   </p>
                 </div>
-              </article>
+              </StaggerReveal>
             ))}
           </div>
 
@@ -211,74 +223,78 @@ export default function Visuals() {
         </div>
 
         <aside className="lg:w-1/4">
-          <div className="bg-surface-container-low rounded-xl p-6 shadow-sm border border-outline-variant/20 sticky top-28">
-            <div className="flex items-center gap-2 mb-6">
-              <span className="material-symbols-outlined text-gold-metallic-start">
-                mic
-              </span>
-              <h2 className="font-headline-sm text-headline-sm text-primary">
-                البودكاست الأحدث
-              </h2>
-            </div>
-            <div className="space-y-6">
-              {PODCASTS.map((podcast, index) => (
-                <div key={podcast.title}>
-                  {index > 0 && (
-                    <hr className="border-outline-variant/30 mb-6" />
-                  )}
-                  <div className="group cursor-pointer">
-                    <div className="flex items-center gap-3 mb-2">
-                      <div className="w-12 h-12 rounded bg-primary flex items-center justify-center group-hover:bg-gold-metallic-start transition-colors">
-                        <span
-                          className="material-symbols-outlined text-white"
-                          style={{ fontVariationSettings: "'FILL' 1" }}
-                        >
-                          play_arrow
-                        </span>
-                      </div>
-                      <div>
-                        <h4 className="font-label-bold text-primary group-hover:text-gold-metallic-start transition-colors">
-                          {podcast.title}
-                        </h4>
-                        <p className="text-[12px] text-outline">{podcast.meta}</p>
-                      </div>
-                    </div>
-                    <p className="text-sm text-on-surface-variant font-body-md line-clamp-2">
-                      {podcast.excerpt}
-                    </p>
-                  </div>
-                </div>
-              ))}
-            </div>
-            <Link
-              className="block w-full mt-8 py-3 text-center text-primary font-label-bold hover:bg-white rounded transition-colors border border-transparent hover:border-outline-variant/30"
-              to={WEBSITE_ROUTES.PODCASTS}
-            >
-              استمع لجميع الحلقات
-            </Link>
-          </div>
-
-          <div className="mt-8 bg-gradient-to-br from-primary-container to-primary p-6 rounded-xl text-white shadow-xl relative overflow-hidden">
-            <div className="absolute -top-4 -left-4 w-20 h-20 bg-gold-metallic-start opacity-10 rounded-full blur-2xl" />
-            <div className="relative z-10">
-              <div className="flex items-center gap-3 mb-4">
+          <RevealOnScroll direction="left">
+            <div className="bg-surface-container-low rounded-xl p-6 shadow-sm border border-outline-variant/20 sticky top-28">
+              <div className="flex items-center gap-2 mb-6">
                 <span className="material-symbols-outlined text-gold-metallic-start">
-                  smart_toy
+                  mic
                 </span>
-                <h3 className="font-label-bold">مساعدي الذكي</h3>
+                <h2 className="font-headline-sm text-headline-sm text-primary site-section-title site-section-title-visible">
+                  البودكاست الأحدث
+                </h2>
               </div>
-              <p className="text-xs text-white/80 font-body-md mb-4 leading-relaxed">
-                أقوم حالياً بتحليل صحة الفيديو &quot;أمن البيانات&quot; بنسبة
-                96%. هل ترغب في عرض التفاصيل الفنية للمصادقة؟
-              </p>
-              <button
-                type="button"
-                className="w-full py-2 bg-white/10 hover:bg-white/20 rounded text-xs font-label-bold transition-all border border-white/20"
+              <div className="space-y-6">
+                {PODCASTS.map((podcast, index) => (
+                  <div key={podcast.title}>
+                    {index > 0 && (
+                      <hr className="border-outline-variant/30 mb-6" />
+                    )}
+                    <div className="group cursor-pointer">
+                      <div className="flex items-center gap-3 mb-2">
+                        <div className="w-12 h-12 rounded bg-primary flex items-center justify-center group-hover:bg-gold-metallic-start transition-colors">
+                          <span
+                            className="material-symbols-outlined text-white"
+                            style={{ fontVariationSettings: "'FILL' 1" }}
+                          >
+                            play_arrow
+                          </span>
+                        </div>
+                        <div>
+                          <h4 className="font-label-bold text-primary group-hover:text-gold-metallic-start transition-colors">
+                            {podcast.title}
+                          </h4>
+                          <p className="text-[12px] text-outline">{podcast.meta}</p>
+                        </div>
+                      </div>
+                      <p className="text-sm text-on-surface-variant font-body-md line-clamp-2">
+                        {podcast.excerpt}
+                      </p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+              <Link
+                className="block w-full mt-8 py-3 text-center text-primary font-label-bold hover:bg-white rounded transition-colors border border-transparent hover:border-outline-variant/30"
+                to={WEBSITE_ROUTES.PODCASTS}
               >
-                فتح التحليل العميق
-              </button>
+                استمع لجميع الحلقات
+              </Link>
             </div>
-          </div>
+          </RevealOnScroll>
+
+          <RevealOnScroll direction="left" delay={120}>
+            <div className="mt-8 bg-gradient-to-br from-primary-container to-primary p-6 rounded-xl text-white shadow-xl relative overflow-hidden">
+              <div className="absolute -top-4 -left-4 w-20 h-20 bg-gold-metallic-start opacity-10 rounded-full blur-2xl" />
+              <div className="relative z-10">
+                <div className="flex items-center gap-3 mb-4">
+                  <span className="material-symbols-outlined text-gold-metallic-start">
+                    smart_toy
+                  </span>
+                  <h3 className="font-label-bold">مساعدي الذكي</h3>
+                </div>
+                <p className="text-xs text-white/80 font-body-md mb-4 leading-relaxed">
+                  أقوم حالياً بتحليل صحة الفيديو &quot;أمن البيانات&quot; بنسبة
+                  96%. هل ترغب في عرض التفاصيل الفنية للمصادقة؟
+                </p>
+                <button
+                  type="button"
+                  className="w-full py-2 bg-white/10 hover:bg-white/20 rounded text-xs font-label-bold transition-all border border-white/20"
+                >
+                  فتح التحليل العميق
+                </button>
+              </div>
+            </div>
+          </RevealOnScroll>
         </aside>
       </div>
     </main>

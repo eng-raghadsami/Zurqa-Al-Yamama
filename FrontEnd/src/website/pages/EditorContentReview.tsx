@@ -1,5 +1,7 @@
 import type { EditorMetric } from "@website/types/editorSpace";
 import { EDITOR_ARTICLE_IMAGE } from "@website/constants/brand";
+import RevealOnScroll from "@shared/components/RevealOnScroll";
+import { EnterItem, StaggerReveal } from "@shared/components/animations";
 import {
   EDITOR_ACTIVITIES,
   EDITOR_AI_INSIGHTS,
@@ -48,6 +50,7 @@ export default function EditorContentReview() {
   return (
     <div className="max-w-container-max mx-auto w-full" dir="rtl">
       {/* عنوان الصفحة */}
+      <EnterItem index={0}>
       <div className="flex flex-row-reverse items-center justify-between gap-4 mb-8">
         <div className="hidden lg:flex items-center gap-2 bg-mist-grey/20 px-3 py-1.5 rounded-full border border-mist-grey/50 shrink-0">
           <span className="w-2 h-2 rounded-full bg-success-teal animate-pulse" />
@@ -55,10 +58,11 @@ export default function EditorContentReview() {
             الذكاء الاصطناعي نشط
           </span>
         </div>
-        <h1 className="text-xl font-headline-sm text-primary">مراجعة المحتوى</h1>
+        <h1 className="text-xl font-headline-sm text-primary site-section-title site-section-title-visible">مراجعة المحتوى</h1>
       </div>
+      </EnterItem>
 
-      {/* مسار التنقل والحالة */}
+      <EnterItem index={1}>
       <div className="flex flex-col sm:flex-row sm:flex-row-reverse sm:items-center sm:justify-between gap-4 mb-8">
         <div className="flex flex-row-reverse items-center gap-2 text-sm text-on-surface-variant">
           <span>{EDITOR_ARTICLE.breadcrumbParent}</span>
@@ -74,10 +78,11 @@ export default function EditorContentReview() {
           </span>
         </div>
       </div>
+      </EnterItem>
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
-        {/* مساحة العمل الرئيسية */}
         <div className="lg:col-span-8 space-y-6">
+          <RevealOnScroll direction="up">
           <div className="bg-white rounded-2xl shadow-sm border border-mist-grey/50 overflow-hidden">
             <div className="p-8 md:p-12">
               <h2 className="text-3xl md:text-4xl font-bold text-primary text-right mb-8 leading-tight">
@@ -153,7 +158,7 @@ export default function EditorContentReview() {
                   <div className="rounded-2xl overflow-hidden border border-mist-grey shadow-md relative aspect-video">
                     <img
                       alt="Financial Analysis"
-                      className="w-full h-full object-cover"
+                      className="w-full h-full object-cover site-card-image"
                       src={EDITOR_ARTICLE_IMAGE}
                       loading="lazy"
                     />
@@ -177,8 +182,9 @@ export default function EditorContentReview() {
               </div>
             </div>
           </div>
+          </RevealOnScroll>
 
-          {/* تحليل الأداء */}
+          <RevealOnScroll direction="up" delay={100}>
           <div className="bg-white rounded-2xl p-6 border border-mist-grey/50 shadow-sm">
             <div className="flex flex-row-reverse items-center justify-between mb-6">
               <h3 className="font-bold text-primary">
@@ -192,15 +198,18 @@ export default function EditorContentReview() {
               </button>
             </div>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-              {EDITOR_METRICS.map((metric) => (
-                <MetricCard key={metric.id} metric={metric} />
+              {EDITOR_METRICS.map((metric, index) => (
+                <StaggerReveal key={metric.id} index={index}>
+                  <MetricCard metric={metric} />
+                </StaggerReveal>
               ))}
             </div>
           </div>
+          </RevealOnScroll>
         </div>
 
-        {/* الشريط الجانبي للتحليل */}
         <div className="lg:col-span-4 space-y-6">
+          <RevealOnScroll direction="left" delay={150}>
           <div className="lg:sticky lg:top-28">
             <div className="bg-primary text-white rounded-2xl p-6 shadow-xl mb-6 relative overflow-hidden">
               <div className="absolute -top-10 -left-10 w-40 h-40 bg-gold-metallic-start/10 rounded-full blur-3xl" />
@@ -218,8 +227,8 @@ export default function EditorContentReview() {
                 </div>
                 <div className="space-y-4">
                   {EDITOR_AI_INSIGHTS.map((insight, index) => (
+                    <StaggerReveal key={insight.label} index={index}>
                     <div
-                      key={insight.label}
                       className={`flex flex-row-reverse justify-between items-center text-sm ${
                         index < EDITOR_AI_INSIGHTS.length - 1
                           ? "border-b border-white/10 pb-3"
@@ -231,11 +240,12 @@ export default function EditorContentReview() {
                         {insight.value}
                       </span>
                     </div>
+                    </StaggerReveal>
                   ))}
                 </div>
                 <button
                   type="button"
-                  className="w-full mt-8 bg-white/10 hover:bg-white/20 border border-white/20 py-2.5 rounded-xl text-xs font-bold transition-all"
+                  className="w-full mt-8 bg-white/10 hover:bg-white/20 border border-white/20 py-2.5 rounded-xl text-xs font-bold transition-all site-btn-shine"
                 >
                   تحميل التقرير الفني
                 </button>
@@ -247,9 +257,9 @@ export default function EditorContentReview() {
                 سجل الأنشطة
               </h3>
               <div className="space-y-4">
-                {EDITOR_ACTIVITIES.map((activity) => (
+                {EDITOR_ACTIVITIES.map((activity, index) => (
+                  <StaggerReveal key={activity.id} index={index}>
                   <div
-                    key={activity.id}
                     className="flex flex-row-reverse gap-3 items-start"
                   >
                     <div
@@ -264,20 +274,21 @@ export default function EditorContentReview() {
                       </p>
                     </div>
                   </div>
+                  </StaggerReveal>
                 ))}
               </div>
             </div>
           </div>
+          </RevealOnScroll>
         </div>
       </div>
 
-      {/* شريط الإجراءات الثابت */}
       <footer className="fixed bottom-20 lg:bottom-0 left-0 right-0 lg:mr-80 bg-white/90 backdrop-blur-md border-t border-mist-grey/50 p-4 md:p-6 z-40 shadow-[0_-10px_30px_rgba(0,0,0,0.03)]">
         <div className="max-w-container-max mx-auto flex flex-row-reverse items-center justify-between gap-4 px-4 md:px-margin-desktop">
           <div className="flex flex-row-reverse items-center gap-4">
             <button
               type="button"
-              className="bg-primary text-white px-6 md:px-12 py-3.5 rounded-xl font-bold text-sm shadow-xl shadow-primary/20 hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center gap-2"
+              className="bg-primary text-white px-6 md:px-12 py-3.5 rounded-xl font-bold text-sm shadow-xl shadow-primary/20 hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center gap-2 site-btn-shine"
             >
               <span className="material-symbols-outlined text-sm">publish</span>
               اعتماد ونشر

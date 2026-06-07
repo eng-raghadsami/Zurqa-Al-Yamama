@@ -1,3 +1,4 @@
+import { PageEnter } from "@shared/components/animations";
 import { Outlet } from "react-router-dom";
 import TopNav from "@website/components/TopNav";
 import AdminSidebar from "@admin/components/AdminSidebar";
@@ -16,7 +17,9 @@ export default function AdminLayout() {
       />
       <AdminSidebar belowTopNav />
       <main className="lg:mr-80 pt-24 md:pt-28 px-4 md:px-margin-desktop pb-24 lg:pb-12">
-        <Outlet />
+        <PageEnter>
+          <Outlet />
+        </PageEnter>
       </main>
       <SidebarBottomNav />
     </div>

@@ -1,7 +1,8 @@
 import { useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { WEBSITE_ROUTES } from "@core/constants/routes";
-import { LIBRARY_NAV_ITEMS } from "@website/components/LibraryNavDropdown";
+import { LIBRARY_NAV_ITEMS, LibraryNavItemLabel } from "@website/components/LibraryNavDropdown";
+import { getVerificationCta } from "@website/helpers/verificationNav";
 
 type MobileNavDrawerProps = {
   open: boolean;
@@ -18,6 +19,7 @@ export default function MobileNavDrawer({
   variant = "public",
 }: MobileNavDrawerProps) {
   const { pathname } = useLocation();
+  const verificationCta = getVerificationCta(pathname);
 
   useEffect(() => {
     if (!open) return;
@@ -84,16 +86,12 @@ export default function MobileNavDrawer({
           </Link>
 
           <p className="px-4 pt-4 pb-2 text-xs font-label-bold text-outline">القصص</p>
-          <Link
-            className={`${sectionClass} ${activeClass(pathname.startsWith("/stories"))}`}
-            to={WEBSITE_ROUTES.STORIES_HUMANITARIAN}
-            onClick={onClose}
-          >
+          <Link className={sectionClass} to={WEBSITE_ROUTES.STORIES_HUMANITARIAN} onClick={onClose}>
             قصص إنسانية
           </Link>
-          <Link className={sectionClass} to={WEBSITE_ROUTES.STORIES_SUCCESS} onClick={onClose}>
+          <a className={sectionClass} href="#" onClick={onClose}>
             قصص نجاح
-          </Link>
+          </a>
 
           <p className="px-4 pt-4 pb-2 text-xs font-label-bold text-outline">المكتبة</p>
           {LIBRARY_NAV_ITEMS.map((item) => (
@@ -103,7 +101,7 @@ export default function MobileNavDrawer({
               to={item.to}
               onClick={onClose}
             >
-              {item.label}
+              <LibraryNavItemLabel label={item.label} featured={item.featured} />
             </Link>
           ))}
 
@@ -121,6 +119,14 @@ export default function MobileNavDrawer({
             onClick={onClose}
           >
             تحقق من الفيديوهات
+          </Link>
+
+          <Link
+            className={sectionClass}
+            to={WEBSITE_ROUTES.EDITOR_DISINFORMATION_ARCHIVE}
+            onClick={onClose}
+          >
+            أرشيف التضليل
           </Link>
 
           <Link
@@ -142,11 +148,11 @@ export default function MobileNavDrawer({
         <div className="p-4 border-t border-outline-variant/20 shrink-0">
           {variant === "authenticated" ? (
             <Link
-              to={WEBSITE_ROUTES.VERIFICATION_IMAGE}
+              to={verificationCta.to}
               className="block w-full py-3 gold-gradient-bg text-on-primary font-label-bold text-center rounded-lg"
               onClick={onClose}
             >
-              تقديم ملف للتحقق
+              {verificationCta.label}
             </Link>
           ) : (
             <button

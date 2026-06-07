@@ -5,6 +5,8 @@ import { useCountUp } from "@core/hooks/useCountUp";
 import AnimatedStatNumber, {
   AnimatedStatProgress,
 } from "@shared/components/AnimatedStatNumber";
+import RevealOnScroll from "@shared/components/RevealOnScroll";
+import { StaggerReveal } from "@shared/components/animations";
 import { formatStatValue } from "@shared/helpers/formatStatValue";
 import type {
   AdminArchiveItem,
@@ -84,7 +86,7 @@ function UsersTable({ users }: { users: AdminUser[] }) {
         </h3>
         <button
           type="button"
-          className="px-4 py-2 border border-primary rounded-lg text-primary font-label-bold hover:bg-primary hover:text-on-primary transition-colors flex items-center justify-center gap-2 shrink-0"
+          className="px-4 py-2 border border-primary rounded-lg text-primary font-label-bold hover:bg-primary hover:text-on-primary transition-colors flex items-center justify-center gap-2 shrink-0 site-btn-shine"
         >
           <span className="material-symbols-outlined text-sm">person_add</span>
           إضافة مستخدم
@@ -360,11 +362,11 @@ function PolicyToggle({
 
 function ArchiveItemRow({ item }: { item: AdminArchiveItem }) {
   return (
-    <div className="flex gap-3 group cursor-pointer">
+    <div className="flex gap-3 group cursor-pointer site-card-hover rounded-lg p-1 -m-1">
       <div className="w-16 h-16 rounded-lg bg-mist-grey overflow-hidden shrink-0">
         <img
           alt={item.title}
-          className="w-full h-full object-cover group-hover:scale-110 transition-transform"
+          className="w-full h-full object-cover site-card-image"
           src={item.image}
           loading="lazy"
         />
@@ -404,32 +406,41 @@ export default function AdminDashboard() {
         <div className="admin-radar-line" style={{ top: "70%" }} />
       </div>
 
-      <header className="mb-10 relative z-10">
-        <h2 className="font-headline-md text-headline-md text-primary mb-2">
-          {ADMIN_PAGE.title}
-        </h2>
-        <p className="text-on-surface-variant font-body-lg text-body-lg">
-          {ADMIN_PAGE.description}
-        </p>
-      </header>
+      <RevealOnScroll direction="up" className="mb-10 relative z-10">
+        <header>
+          <h2 className="font-headline-md text-headline-md text-primary mb-2 site-section-title site-section-title-visible">
+            {ADMIN_PAGE.title}
+          </h2>
+          <p className="text-on-surface-variant font-body-lg text-body-lg">
+            {ADMIN_PAGE.description}
+          </p>
+        </header>
+      </RevealOnScroll>
 
       <section className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-gutter mb-section-gap relative z-10">
-        {ADMIN_OVERVIEW_STATS.map((stat) => (
-          <OverviewStatCard key={stat.id} stat={stat} />
+        {ADMIN_OVERVIEW_STATS.map((stat, index) => (
+          <StaggerReveal key={stat.id} index={index}>
+            <OverviewStatCard stat={stat} />
+          </StaggerReveal>
         ))}
       </section>
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-gutter relative z-10">
         <section className="lg:col-span-8 space-y-gutter">
+          <RevealOnScroll direction="up">
           <UsersTable users={ADMIN_USERS} />
+          </RevealOnScroll>
 
+          <RevealOnScroll direction="up" delay={100}>
           <StrategicAnalyticsPanel
             chartPeriod={chartPeriod}
             onChartPeriodChange={setChartPeriod}
           />
+          </RevealOnScroll>
         </section>
 
         <aside className="lg:col-span-4 space-y-gutter">
+          <RevealOnScroll direction="left" delay={100}>
           <section className="bg-surface-container-lowest p-6 rounded-xl shadow-sm border border-outline-variant/10">
             <div className="flex items-center gap-2 mb-6">
               <span className="material-symbols-outlined text-gold-metallic-start">
@@ -450,7 +461,9 @@ export default function AdminDashboard() {
               ))}
             </div>
           </section>
+          </RevealOnScroll>
 
+          <RevealOnScroll direction="left" delay={200}>
           <section className="bg-surface-container-lowest p-6 rounded-xl shadow-sm border border-outline-variant/10">
             <div className="flex justify-between items-center mb-6">
               <h3 className="font-headline-sm text-headline-sm text-primary">
@@ -464,12 +477,16 @@ export default function AdminDashboard() {
               </Link>
             </div>
             <div className="space-y-4">
-              {ADMIN_ARCHIVE_ITEMS.map((item) => (
-                <ArchiveItemRow key={item.id} item={item} />
+              {ADMIN_ARCHIVE_ITEMS.map((item, index) => (
+                <StaggerReveal key={item.id} index={index}>
+                  <ArchiveItemRow item={item} />
+                </StaggerReveal>
               ))}
             </div>
           </section>
+          </RevealOnScroll>
 
+          <RevealOnScroll direction="left" delay={300}>
           <div className="bg-gradient-to-br from-gold-metallic-start to-gold-metallic-end p-6 rounded-xl shadow-lg">
             <div className="flex items-center justify-between mb-4">
               <p className="text-primary font-bold">ذكاء المساعدة الفوري</p>
@@ -483,11 +500,12 @@ export default function AdminDashboard() {
             </p>
             <button
               type="button"
-              className="w-full py-2 bg-primary text-on-primary rounded-lg font-label-bold text-sm hover:bg-primary-container transition-all"
+              className="w-full py-2 bg-primary text-on-primary rounded-lg font-label-bold text-sm hover:bg-primary-container transition-all site-btn-shine"
             >
               تفعيل المراقبة الذكية
             </button>
           </div>
+          </RevealOnScroll>
         </aside>
       </div>
     </div>

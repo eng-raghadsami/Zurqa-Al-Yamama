@@ -1,3 +1,4 @@
+import { PageEnter } from "@shared/components/animations";
 import { Outlet, useLocation } from "react-router-dom";
 import { WEBSITE_ROUTES } from "@core/constants/routes";
 import TopNav from "@website/components/TopNav";
@@ -20,12 +21,14 @@ export default function VerifiedNewsLayout() {
       )}
       <div
         className={`max-w-container-max mx-auto px-margin-mobile md:px-margin-desktop ${
-          isDetailPage ? "pt-20 pb-10" : "py-8 pb-24 lg:pb-8"
+          isDetailPage ? "pt-28 pb-10 md:pt-32" : "py-8 pb-24 lg:pb-8"
         } flex flex-col lg:flex-row gap-gutter`}
       >
         {!isDetailPage && <VerifiedNewsSidebar />}
         <div className="flex-1 min-w-0">
-          <Outlet />
+          <PageEnter>
+            <Outlet />
+          </PageEnter>
         </div>
       </div>
       <VerifiedNewsFooter />

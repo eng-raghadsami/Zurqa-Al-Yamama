@@ -17,12 +17,14 @@ export default function AnimatedStatNumber({
   duration,
   enabled,
   threshold,
+  startOnMount,
 }: AnimatedStatNumberProps) {
   const { value, ref } = useCountUp(target, {
     decimals,
     duration,
     enabled,
     threshold,
+    startOnMount,
   });
 
   return (

@@ -368,10 +368,10 @@ export function filterVerifiedNews(
 }
 
 export const INTEGRITY_DAILY_STATS = {
-  score: "٩٨.٤",
-  change: "+١.٢٪",
-  scannedToday: "٢,٤٥٠",
-};
+  score: 98.4,
+  change: 1.2,
+  scannedToday: 2450,
+} as const;
 
 /** ترتيب العرض في صفحة القائمة — مطابق للتصميم الأصلي (Bento) */
 export const LISTING_ARTICLE_SLUGS = [
