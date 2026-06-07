@@ -1,0 +1,28 @@
+plugins = []
+headers = []
+redirects = []
+
+[functions]
+
+[functions."*"]
+
+[build]
+publish = "D:\\Main\\Learning-Fields\\هاكاثون - CDMC\\CDMC Project Demo\\New folder\\Zurqa-Al-Yamama\\FrontEnd\\dist"
+publishOrigin = "ui"
+commandOrigin = "ui"
+base = "D:\\Main\\Learning-Fields\\هاكاثون - CDMC\\CDMC Project Demo\\New folder\\Zurqa-Al-Yamama\\FrontEnd"
+command = "npm run build"
+
+[build.environment]
+
+[build.processing]
+
+[build.processing.css]
+
+[build.processing.html]
+
+[build.processing.images]
+
+[build.processing.js]
+
+[build.services]
