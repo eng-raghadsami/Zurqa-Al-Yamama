@@ -13,10 +13,6 @@ use App\Http\Controllers\ReportAnalysisController;
 use App\Http\Controllers\TermController;
 use App\Http\Controllers\TextAnalysisController;
 
-Route::get('/api/documentation', function () {
-    return view('l5-swagger::index');
-});
-
 // Resources
 Route::apiResource('stories', StoryController::class);
 Route::apiResource('contents', ContentController::class);
