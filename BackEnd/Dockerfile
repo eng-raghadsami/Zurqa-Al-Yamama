@@ -1,4 +1,5 @@
 FROM php:8.2-cli
+RUN echo "nameserver 8.8.8.8" > /etc/resolv.conf
 
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 
