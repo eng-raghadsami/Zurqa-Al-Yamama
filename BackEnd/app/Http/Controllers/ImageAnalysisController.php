@@ -9,24 +9,24 @@ class ImageAnalysisController extends Controller
 {
     public function analyze(Request $request, ImageAnalysisService $service)
     {
-<<<<<<< HEAD
-        $request->validate(['image' => 'required|file|mimes:jpg,jpeg,png']);
-=======
         $request->validate([
             'image' => 'required|file|mimes:jpg,jpeg,png,webp|max:10240'
         ]);
->>>>>>> 39ff47a240576f638641e39de3d2d7a30b9c73ed
 
         $file = $request->file('image');
-        $results = $service->analyze($file->getRealPath(), $file->getMimeType());
+        $path = $file->getRealPath();
 
-        // تنفيذ التغبيش إذا لزم الأمر
+        // 1. استدعاء الخدمة
+        $results = $service->analyze($path, $file->getMimeType());
+
+        // 2. تطبيق التغبيش بناءً على الـ Actions
         foreach ($results['actions'] as $action) {
-            if ($action === 'blur_strong' || $action === 'blur_mild') {
+            if (in_array($action, ['blur_strong', 'blur_medium', 'blur_light'])) {
                 $results['blurred_image_url'] = $service->applyBlur($path, $action);
             }
         }
 
+        // 3. إرجاع النتيجة النهائية
         return response()->json([
             'analysis' => $results,
         ]);
