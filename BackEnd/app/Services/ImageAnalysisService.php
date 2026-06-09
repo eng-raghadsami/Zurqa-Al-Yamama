@@ -41,15 +41,13 @@ class ImageAnalysisService
     private function analyzeWithGemini(string $imagePath, ?string $mimeType, array &$results): void
     {
         $geminiKey = config('services.gemini.key');
-        // تأكدي أن هذا الموديل موجود في حسابك أو استخدمي 'gemini-1.5-flash'
+        // تم التصحيح إلى موديل مستقر وموجود فعلياً
         $geminiModel = config('services.gemini.model', 'gemini-2.5-flash');
 
         $imageData = @file_get_contents($imagePath);
 
         try {
             $http = new Client(['timeout' => 60, 'verify' => false]);
-
-            // استخدام v1beta وهو الإصدار الذي يدعم موديلات Gemini Flash
             $url = "https://generativelanguage.googleapis.com/v1beta/models/{$geminiModel}:generateContent";
 
             $response = $http->post($url, [
@@ -57,7 +55,7 @@ class ImageAnalysisService
                 'json' => [
                     'contents' => [[
                         'parts' => [
-                            ['text' => 'حلّل الصورة كخبير إشراف محتوى وأعد JSON فقط بالمعايير التالية: racism_percentage, violence_or_hate_percentage, sensitive_content_percentage, blood_gore_percentage, forged_percentage, ai_generated_percentage, description. لا تضع أي نصوص خارجية.'],
+                            ['text' => 'حللي الصورة بدقة عالية. أعيدي الرد بصيغة JSON فقط بهذا الهيكل: {"criteria_scores": {"racism_percentage": 0, "violence_or_hate_percentage": 0, "sensitive_content_percentage": 0, "blood_gore_percentage": 0, "forged_percentage": 0, "ai_generated_percentage": 0}, "description": "وصف دقيق"}. يجب أن تكون النسب من 0 إلى 100 بناءً على محتوى الصورة. لا تضيفي أي نصوص خارج JSON.'],
                             ['inline_data' => [
                                 'mime_type' => $mimeType ?: 'image/jpeg',
                                 'data' => base64_encode($imageData)
@@ -70,13 +68,13 @@ class ImageAnalysisService
             $body = json_decode($response->getBody(), true);
             $rawText = $body['candidates'][0]['content']['parts'][0]['text'] ?? '{}';
 
-            // تنظيف النص في حال وجود ماركداون
-            $cleanJson = str_replace(['```json', '```'], '', $rawText);
-            $parsed = json_decode(trim($cleanJson), true);
+            $cleanJson = trim(str_replace(['```json', '```'], '', $rawText));
+            $parsed = json_decode($cleanJson, true);
 
-            $results['criteria_scores'] = $this->normalizeScores($parsed['criteria_scores'] ?? []);
-            $results['description'] = $parsed['description'] ?? null;
-
+            if ($parsed) {
+                $results['criteria_scores'] = array_merge($this->emptyScores(), $parsed['criteria_scores'] ?? []);
+                $results['description'] = $parsed['description'] ?? null;
+            }
         } catch (Throwable $e) {
             $results['errors']['gemini'] = $e->getMessage();
         }
@@ -96,7 +94,8 @@ class ImageAnalysisService
     private function resolveActions(array &$results): void
     {
         $scores = $results['criteria_scores'];
-        $max = max($scores);
+        // التحقق من القيم بأمان
+        $max = !empty($scores) ? max($scores) : 0;
 
         if (($scores['forged_percentage'] ?? 0) >= 70 || ($scores['ai_generated_percentage'] ?? 0) >= 70) {
             $results['actions'][] = 'delete';
