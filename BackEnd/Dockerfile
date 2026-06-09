@@ -18,9 +18,10 @@ COPY . .
 # تثبيت الـ dependencies
 RUN composer install --no-dev --optimize-autoloader
 
-# توليد Swagger docs أثناء الـ build
-RUN php artisan migrate --force || true \
-    && php artisan l5-swagger:generate || true
+# توليد Swagger docs أثناء الـ build (لا يحتاج قاعدة بيانات)
+RUN php artisan l5-swagger:generate || true
 
-# تشغيل السيرفر
-CMD php artisan serve --host=0.0.0.0 --port=$PORT
+# تشغيل الـ migrations وتعبئة قاموس المصطلحات عند الإقلاع (TermSeeder يعتمد updateOrCreate فآمن للتكرار) ثم تشغيل السيرفر
+CMD php artisan migrate --force \
+    && php artisan db:seed --class=TermSeeder --force \
+    && php artisan serve --host=0.0.0.0 --port=$PORT

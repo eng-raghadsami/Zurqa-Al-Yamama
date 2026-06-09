@@ -9,10 +9,16 @@ class ImageAnalysisController extends Controller
 {
     public function analyze(Request $request, ImageAnalysisService $service)
     {
+<<<<<<< HEAD
         $request->validate(['image' => 'required|file|mimes:jpg,jpeg,png']);
+=======
+        $request->validate([
+            'image' => 'required|file|mimes:jpg,jpeg,png,webp|max:10240'
+        ]);
+>>>>>>> 39ff47a240576f638641e39de3d2d7a30b9c73ed
 
-        $path = $request->file('image')->getRealPath();
-        $results = $service->analyze($path);
+        $file = $request->file('image');
+        $results = $service->analyze($file->getRealPath(), $file->getMimeType());
 
         // تنفيذ التغبيش إذا لزم الأمر
         foreach ($results['actions'] as $action) {
