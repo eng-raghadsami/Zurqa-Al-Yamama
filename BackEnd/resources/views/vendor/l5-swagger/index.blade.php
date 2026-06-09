@@ -126,7 +126,7 @@
         const urls = [];
 
         @foreach($urlsToDocs as $title => $url)
-            urls.push({name: "{{ $title }}", url: "{{ $url }}"});
+            urls.push({name: "{{ $title }}", url: "{{ \Illuminate\Support\Str::before($url, '?') }}"});
         @endforeach
 
         // Build a system
