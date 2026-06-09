@@ -16,11 +16,4 @@ COPY . .
 
 RUN composer install --no-dev --optimize-autoloader
 
-RUN php artisan config:clear \
-    && php artisan route:clear \
-    && php artisan cache:clear \
-    && php artisan view:clear
-
-RUN php artisan l5-swagger:generate || true
-
 CMD php artisan migrate --force && php artisan serve --host=0.0.0.0 --port=$PORT
