@@ -33,7 +33,7 @@ class TextAnalysisService
     private function analyzeWithGemini(string $text, array &$results): void
     {
         $geminiKey = config('services.gemini.key');
-        $geminiModel = config('services.gemini.model', 'gemini-1.5-flash');
+        $geminiModel = config('services.gemini.model', 'gemini-2.5-flash');
 
         if (blank($geminiKey)) {
             $results['errors']['gemini'] = 'مفتاح Gemini غير مضبوط في ملف .env.';

@@ -42,7 +42,7 @@ class ImageAnalysisService
     {
         $geminiKey = config('services.gemini.key');
         // تأكدي أن هذا الموديل موجود في حسابك أو استخدمي 'gemini-1.5-flash'
-        $geminiModel = config('services.gemini.model', 'gemini-1.5-flash');
+        $geminiModel = config('services.gemini.model', 'gemini-2.5-flash');
 
         $imageData = @file_get_contents($imagePath);
 
