@@ -8,7 +8,7 @@ use OpenApi\Attributes as OA;
 
 class ImageAnalysisController extends Controller
 {
-#[OA\Post(
+    #[OA\Post(
         path: '/api/images/analyze',
         summary: 'Analyze an image for safety',
         tags: ['Images'],
@@ -25,7 +25,8 @@ class ImageAnalysisController extends Controller
             )
         ),
         responses: [
-            new OA\Response(response: 200, description: 'Successful analysis')
+            new OA\Response(response: 200, description: 'Successful analysis'),
+            new OA\Response(response: 422, description: 'Validation error')
         ]
     )]
     public function analyze(Request $request, ImageAnalysisService $service)
@@ -37,17 +38,15 @@ class ImageAnalysisController extends Controller
         $file = $request->file('image');
         $path = $file->getRealPath();
 
-        // 1. استدعاء الخدمة
         $results = $service->analyze($path, $file->getMimeType());
 
-        // 2. تطبيق التغبيش بناءً على الـ Actions
+        // 应用模糊处理（仅当 action 不是 delete 时）
         foreach ($results['actions'] as $action) {
             if (in_array($action, ['blur_strong', 'blur_medium', 'blur_light'])) {
                 $results['blurred_image_url'] = $service->applyBlur($path, $action);
             }
         }
 
-        // 3. إرجاع النتيجة النهائية
         return response()->json([
             'analysis' => $results,
         ]);
