@@ -48,6 +48,7 @@ return [
     base_path('app/Http/Controllers/TextAnalysisController.php'),
     base_path('app/Http/Controllers/TermController.php'),
     base_path('app/Http/Controllers/ImageAnalysisController.php'),
+    base_path('app/Http/Controllers/ContentController.php'),
 ],
             ],
         ],
