@@ -31,17 +31,37 @@ class ContentController extends Controller
                     new OA\Property(property: 'body', type: 'string', example: 'Content details'),
                     new OA\Property(property: 'user_id', type: 'integer', example: 1),
                     new OA\Property(property: 'category_id', type: 'integer', example: 2),
-                    new OA\Property(property: 'type', type: 'string', example: 'story'),
-                    new OA\Property(property: 'status', type: 'string', example: 'draft')
+                    new OA\Property(property: 'status', type: 'string', example: 'draft'),
+                    new OA\Property(property: 'updated_by', type: 'integer', example: 1)
                 ]
             )
         ),
-        responses: [new OA\Response(response: 201, description: 'Content created successfully')]
+        responses: [
+            new OA\Response(response: 201, description: 'Content created successfully'),
+            new OA\Response(response: 422, description: 'Validation or create error')
+        ]
     )]
     public function store(Request $request)
     {
-        $content = Content::create($request->all());
-        return response()->json(['success' => true, 'content' => $content]);
+        $validated = $request->validate([
+            'title' => ['required', 'string', 'max:255'],
+            'body' => ['required', 'string'],
+            'user_id' => ['required', 'integer', 'exists:users,id'],
+            'category_id' => ['required', 'integer', 'exists:categories,id'],
+            'status' => ['required', 'string', 'max:50'],
+            'updated_by' => ['nullable', 'integer', 'exists:users,id'],
+        ]);
+
+        try {
+            $content = Content::create($validated);
+            return response()->json(['success' => true, 'content' => $content], 201);
+        } catch (\Throwable $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to create content.',
+                'error' => $e->getMessage(),
+            ], 422);
+        }
     }
 
     #[OA\Get(
@@ -82,8 +102,15 @@ class ContentController extends Controller
     )]
     public function update(Request $request, $id)
     {
+        $validated = $request->validate([
+            'title' => ['sometimes', 'string', 'max:255'],
+            'body' => ['sometimes', 'string'],
+            'category_id' => ['sometimes', 'integer', 'exists:categories,id'],
+            'status' => ['sometimes', 'string', 'max:50'],
+        ]);
+
         $content = Content::findOrFail($id);
-        $content->update($request->all());
+        $content->update($validated);
         return response()->json(['success' => true, 'content' => $content]);
     }
 
@@ -102,3 +129,4 @@ class ContentController extends Controller
         return response()->json(['success' => true]);
     }
 }
+
