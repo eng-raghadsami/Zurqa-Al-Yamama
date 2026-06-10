@@ -52,10 +52,17 @@ return [
     'key' => env('PERSPECTIVE_API_KEY'),
 ],
 
-'huggingface' => [
-    'key' => env('HUGGINGFACE_API_KEY'),
-    'moderation_model' => env('HUGGINGFACE_MODERATION_MODEL', 'textdetox/xlmr-large-toxicity-classifier'),
-    'api_url' => env('HUGGINGFACE_API_URL', 'https://router.huggingface.co/hf-inference/models'),
-],
+    'huggingface' => [
+        'key' => env('HUGGINGFACE_API_KEY'),
+        'moderation_model' => env('HUGGINGFACE_MODERATION_MODEL', 'textdetox/xlmr-large-toxicity-classifier'),
+        'api_url' => env('HUGGINGFACE_API_URL', 'https://router.huggingface.co/hf-inference/models'),
+    ],
+
+    'elevenlabs' => [
+        'key' => env('ELEVENLABS_API_KEY'),
+        'model_id' => env('ELEVENLABS_MODEL_ID', 'eleven_multilingual_v2'),
+        'voice_id' => env('ELEVENLABS_VOICE_ID', 'pNInz6obpgDQGcFmaJgB'),
+    ],
 
 ];
+

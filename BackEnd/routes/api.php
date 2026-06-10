@@ -12,6 +12,7 @@ use App\Http\Controllers\ImageAnalysisController;
 use App\Http\Controllers\ReportAnalysisController;
 use App\Http\Controllers\TermController;
 use App\Http\Controllers\TextAnalysisController;
+use App\Http\Controllers\TtsBroadcastController;
 
 // Resources
 Route::apiResource('stories', StoryController::class);
@@ -28,3 +29,7 @@ Route::post('/reports/analyze', [ReportAnalysisController::class, 'analyze']);
 Route::post('/images/analyze', [ImageAnalysisController::class, 'analyze']);
 Route::post('/texts/analyze', [TextAnalysisController::class, 'analyze']);
 Route::post('/terms/match', [TermController::class, 'match']);
+
+Route::post('/published/{id}/broadcast/audio', [TtsBroadcastController::class, 'audio']);
+
+

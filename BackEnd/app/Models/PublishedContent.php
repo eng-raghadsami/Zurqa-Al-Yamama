@@ -9,7 +9,18 @@ class PublishedContent extends Model
 {
     use HasFactory;
     protected $table = 'published_contents';
-    protected $fillable = ['content_id','journalist_id','editor_id','published_at','updated_by'];
+    protected $fillable = [
+        'content_id',
+        'journalist_id',
+        'editor_id',
+        'published_at',
+        'updated_by',
+        'audio_path',
+        'audio_model_id',
+        'audio_voice_id',
+        'audio_generated_at',
+    ];
+
 
     public function content()
     {
