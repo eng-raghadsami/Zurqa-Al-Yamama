@@ -30,52 +30,112 @@ class TextAnalysisService
         return $results;
     }
 
-    private function analyzeWithGemini(string $text, array &$results): void
-    {
-        $geminiKey = config('services.gemini.key');
-        $geminiModel = config('services.gemini.model', 'gemini-2.5-flash');
+   private function analyzeWithGemini(string $text, array &$results): void
+{
+    $geminiKey = config('services.gemini.key');
+    $geminiModel = config('services.gemini.model', 'gemini-1.5-flash');
 
-        if (blank($geminiKey)) {
-            $results['errors']['gemini'] = 'مفتاح Gemini غير مضبوط في ملف .env.';
+    if (blank($geminiKey)) {
+        $results['errors']['gemini'] = 'مفتاح Gemini غير مضبوط في ملف .env.';
+        return;
+    }
+
+    try {
+        $http = new Client([
+            'timeout' => 30,
+            'verify' => false,
+        ]);
+
+        $prompt = "
+أنت محرر عربي خبير في تحليل النصوص.
+
+أعد JSON صالح فقط.
+لا تستخدم Markdown.
+لا تستخدم ```json.
+لا تضف أي شرح أو نص خارج JSON.
+
+يجب أن تكون جميع القيم النصية باللغة العربية.
+
+الشكل المطلوب:
+
+{
+  \"criteria_scores\": {
+    \"hate_speech_percentage\": 0,
+    \"racism_percentage\": 0,
+    \"gender_inclusivity_percentage\": 100,
+    \"bias_percentage\": 0,
+    \"immoral_language_percentage\": 0,
+    \"violence_incitement_percentage\": 0
+  },
+  \"improvements\": [
+    {
+      \"original_phrase\": \"النص الأصلي\",
+      \"suggested_fix\": \"الصياغة المقترحة\",
+      \"reason\": \"سبب الاقتراح\"
+    }
+  ],
+  \"general_advice\": \"نصيحة عامة\"
+}
+
+النص للتحليل:
+
+{$text}
+";
+
+        $response = $http->post(
+            "https://generativelanguage.googleapis.com/v1beta/models/{$geminiModel}:generateContent",
+            [
+                'headers' => [
+                    'Content-Type' => 'application/json',
+                    'x-goog-api-key' => $geminiKey,
+                ],
+                'json' => [
+                    'contents' => [
+                        [
+                            'parts' => [
+                                [
+                                    'text' => $prompt
+                                ]
+                            ]
+                        ]
+                    ]
+                ]
+            ]
+        );
+
+        $body = json_decode($response->getBody()->getContents(), true);
+
+        $rawText = $body['candidates'][0]['content']['parts'][0]['text'] ?? null;
+
+        if (!$rawText) {
+            $results['errors']['gemini'] = 'لم يتم استلام رد من Gemini.';
             return;
         }
 
-        try {
-            $http = new Client(['timeout' => 30, 'verify' => false]);
+        // إزالة Markdown إن وجد
+        $rawText = preg_replace('/^```json\s*/i', '', $rawText);
+        $rawText = preg_replace('/^```\s*/i', '', $rawText);
+        $rawText = preg_replace('/\s*```$/i', '', $rawText);
+        $rawText = trim($rawText);
 
-            $prompt = "أنت محرر عربي خبير في تحليل النصوص. حلل النص التالي وأعد JSON صالح فقط بدون أي شرح خارجي.
-            يجب أن تكون كل القيم النصية باللغة العربية، خصوصا suggested_fix و reason و general_advice.
-            {
-              \"criteria_scores\": { \"hate_speech_percentage\": 0, \"racism_percentage\": 0, \"gender_inclusivity_percentage\": 100, \"bias_percentage\": 0, \"immoral_language_percentage\": 0, \"violence_incitement_percentage\": 0 },
-              \"improvements\": [ { \"original_phrase\": \"العبارة الأصلية من النص\", \"suggested_fix\": \"الصياغة المقترحة بالعربية\", \"reason\": \"سبب الاقتراح بالعربية\" } ],
-              \"general_advice\": \"نصيحة عامة بالعربية\"
-            }
-            النص: {$text}";
+        $decoded = json_decode($rawText, true);
 
-            $response = $http->post(
-                "https://generativelanguage.googleapis.com/v1beta/models/{$geminiModel}:generateContent",
-                [
-                    'headers' => ['Content-Type' => 'application/json', 'x-goog-api-key' => $geminiKey],
-                    'json' => [
-                        'contents' => [['parts' => [['text' => $prompt]]]],
-                    ],
-                ]
-            );
+        if (json_last_error() !== JSON_ERROR_NONE) {
+            $results['errors']['gemini'] =
+                'أرجع Gemini صيغة JSON غير صالحة: ' .
+                json_last_error_msg();
 
-            $body = json_decode($response->getBody(), true);
-            $rawText = $body['candidates'][0]['content']['parts'][0]['text'] ?? null;
+            $results['errors']['gemini_raw_response'] = $rawText;
 
-            if ($rawText) {
-                $results['gemini_summary'] = json_decode(trim($rawText), true);
-
-                if (json_last_error() !== JSON_ERROR_NONE) {
-                    $results['errors']['gemini'] = 'أرجع Gemini صيغة JSON غير صالحة: ' . json_last_error_msg();
-                }
-            }
-        } catch (Throwable $e) {
-            $results['errors']['gemini'] = 'خطأ في Gemini: ' . $e->getMessage();
+            return;
         }
+
+        $results['gemini_summary'] = $decoded;
+
+    } catch (Throwable $e) {
+        $results['errors']['gemini'] = 'خطأ في Gemini: ' . $e->getMessage();
     }
+}
 
     private function analyzeWithHuggingFace(string $text, array &$results): void
     {
