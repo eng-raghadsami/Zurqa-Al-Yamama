@@ -1,4 +1,7 @@
+import { Link } from "react-router-dom";
+import { WEBSITE_ROUTES } from "@core/constants/routes";
 import type { EditorMetric } from "@website/types/editorSpace";
+import { listPendingSubmissions } from "@website/helpers/contentSubmissionsStore";
 import { EDITOR_ARTICLE_IMAGE } from "@website/constants/brand";
 import RevealOnScroll from "@shared/components/RevealOnScroll";
 import { EnterItem, StaggerReveal } from "@shared/components/animations";
@@ -44,13 +47,31 @@ function MetricCard({ metric }: { metric: EditorMetric }) {
 }
 
 export default function EditorContentReview() {
+  const pendingCount = listPendingSubmissions().length;
   const ethicsHighlight = EDITOR_HIGHLIGHTS.find((h) => h.type === "quote");
   const biasHighlight = EDITOR_HIGHLIGHTS.find((h) => h.type === "bias");
 
   return (
     <div className="max-w-container-max mx-auto w-full" dir="rtl">
+      {pendingCount > 0 && (
+        <EnterItem index={0}>
+          <div className="mb-6 rounded-xl border border-gold-metallic-start/30 bg-gold-metallic-start/5 p-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+            <p className="text-sm text-on-surface-variant">
+              <span className="font-label-bold text-primary">{pendingCount}</span> مساهمة
+              بانتظار مراجعة الخبراء قبل النشر.
+            </p>
+            <Link
+              to={WEBSITE_ROUTES.EDITOR_EXPERT_REVIEW}
+              className="text-sm font-label-bold text-secondary hover:underline shrink-0"
+            >
+              فتح قائمة المراجعة ←
+            </Link>
+          </div>
+        </EnterItem>
+      )}
+
       {/* عنوان الصفحة */}
-      <EnterItem index={0}>
+      <EnterItem index={pendingCount > 0 ? 1 : 0}>
       <div className="flex flex-row-reverse items-center justify-between gap-4 mb-8">
         <div className="hidden lg:flex items-center gap-2 bg-mist-grey/20 px-3 py-1.5 rounded-full border border-mist-grey/50 shrink-0">
           <span className="w-2 h-2 rounded-full bg-success-teal animate-pulse" />

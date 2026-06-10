@@ -1,46 +1,60 @@
 import { useState } from "react";
 import { Link, Navigate, useParams } from "react-router-dom";
 import { WEBSITE_ROUTES } from "@core/constants/routes";
+import { useHighlightTerms, useVerifiedNewsArticle } from "@services";
 import RevealOnScroll from "@shared/components/RevealOnScroll";
 import { EnterItem, StaggerReveal } from "@shared/components/animations";
+import ArticleListenButton from "@website/components/broadcast/ArticleListenButton";
+import ContentEditorToolbar from "@website/components/ContentEditorToolbar";
+import TermHighlightedText from "@website/components/TermHighlightedText";
 import VerifiedNewsImage from "@website/components/VerifiedNewsImage";
 import { downloadVerifiedNewsReport } from "@website/helpers/downloadVerifiedNewsReport";
+import type { HighlightTerm } from "@website/helpers/termHighlightUtils";
 import type { VerifiedNewsBodySection } from "@website/types/verifiedNews";
 import {
   NEWS_CATEGORY_LABELS,
   getRelatedArticles,
-  getVerifiedNewsBySlug,
 } from "@website/types/verifiedNews";
 
-function ArticleBody({ sections }: { sections: VerifiedNewsBodySection[] }) {
+function ArticleBody({
+  sections,
+  terms,
+}: {
+  sections: VerifiedNewsBodySection[];
+  terms: HighlightTerm[];
+}) {
   return (
-    <div className="font-body-lg text-body-lg leading-relaxed text-on-surface space-y-6">
+    <div className="space-y-6 font-body-lg text-body-lg leading-relaxed text-on-surface">
       {sections.map((section, index) => {
         if (section.type === "paragraph") {
-          return <p key={index}>{section.text}</p>;
+          return (
+            <p key={index}>
+              <TermHighlightedText text={section.text} terms={terms} />
+            </p>
+          );
         }
         if (section.type === "heading") {
           return (
             <h2
               key={index}
-              className="font-headline-md text-headline-md text-primary pt-4"
+              className="pt-4 font-headline-md text-headline-md text-primary"
             >
-              {section.text}
+              <TermHighlightedText text={section.text} terms={terms} />
             </h2>
           );
         }
         return (
           <blockquote
             key={index}
-            className="relative border-r-4 border-gold-metallic-start bg-surface-container-low p-8 rounded-lg my-10"
+            className="relative my-10 rounded-lg border-r-4 border-gold-metallic-start bg-surface-container-low p-8"
           >
-            <span className="material-symbols-outlined absolute -top-4 -right-2 text-gold-metallic-start text-5xl opacity-30">
+            <span className="material-symbols-outlined absolute -right-2 -top-4 text-5xl text-gold-metallic-start opacity-30">
               format_quote
             </span>
             <p className="font-headline-sm text-headline-sm italic leading-snug">
-              {section.text}
+              <TermHighlightedText text={section.text} terms={terms} />
             </p>
-            <footer className="mt-4 font-label-bold text-label-bold text-on-surface-variant text-left">
+            <footer className="mt-4 text-left font-label-bold text-label-bold text-on-surface-variant">
               — {section.author}
             </footer>
           </blockquote>
@@ -52,9 +66,18 @@ function ArticleBody({ sections }: { sections: VerifiedNewsBodySection[] }) {
 
 export default function VerifiedNewsDetail() {
   const { slug } = useParams<{ slug: string }>();
-  const article = slug ? getVerifiedNewsBySlug(slug) : undefined;
+  const { data: article, isLoading } = useVerifiedNewsArticle(slug);
+  const { data: highlightTerms = [] } = useHighlightTerms();
   const [isDownloading, setIsDownloading] = useState(false);
   const [downloadError, setDownloadError] = useState<string | null>(null);
+
+  if (isLoading) {
+    return (
+      <main className="py-16 text-center text-on-surface-variant">
+        جاري تحميل الخبر...
+      </main>
+    );
+  }
 
   if (!article) {
     return <Navigate to={WEBSITE_ROUTES.VERIFIED_NEWS} replace />;
@@ -100,9 +123,13 @@ export default function VerifiedNewsDetail() {
         </EnterItem>
 
         <RevealOnScroll>
+          <ContentEditorToolbar contentLabel={`الخبر «${article.title}»`} />
+        </RevealOnScroll>
+
+        <RevealOnScroll>
           <header className="space-y-4 pt-2 md:pt-4">
             <h1 className="font-display-lg text-display-lg-mobile md:text-display-lg leading-tight text-primary site-section-title site-section-title-visible">
-              {article.title}
+              <TermHighlightedText text={article.title} terms={highlightTerms} />
             </h1>
           <div className="flex flex-wrap items-center gap-6 py-4 border-y border-outline-variant/10">
             {article.verifier && (
@@ -203,7 +230,7 @@ export default function VerifiedNewsDetail() {
         </RevealOnScroll>
 
         <RevealOnScroll>
-          <ArticleBody sections={article.body} />
+          <ArticleBody sections={article.body} terms={highlightTerms} />
         </RevealOnScroll>
 
         <footer className="relative z-10 space-y-3 border-t border-outline-variant/20 pt-10">
@@ -220,6 +247,12 @@ export default function VerifiedNewsDetail() {
               </span>
               {isDownloading ? "جاري إعداد التقرير..." : "تحميل التقرير الكامل"}
             </button>
+            <ArticleListenButton
+              title={article.title}
+              subtitle={`خبر موثّق • ${article.verifier?.name ?? "زرقاء اليمامة"}`}
+              coverImage={article.detailImage}
+              sections={article.body}
+            />
             <button
               type="button"
               className="flex cursor-pointer items-center gap-2 rounded-lg border border-primary px-8 py-3 font-label-bold text-label-bold text-primary transition-all hover:bg-mist-grey"

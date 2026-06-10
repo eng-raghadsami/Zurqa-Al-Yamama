@@ -3,17 +3,21 @@ import { Link } from "react-router-dom";
 import { WEBSITE_ROUTES } from "@core/constants/routes";
 import { useCountUp } from "@core/hooks/useCountUp";
 import { useReducedMotion } from "@core/hooks/useReducedMotion";
+import {
+  useVerifiedNewsIntegrityStats,
+  useVerifiedNewsListing,
+} from "@services";
 import RevealOnScroll from "@shared/components/RevealOnScroll";
 import AnimatedStatNumber from "@shared/components/AnimatedStatNumber";
 import { formatStatValue } from "@shared/helpers/formatStatValue";
 import { EnterItem, StaggerReveal } from "@shared/components/animations";
+import { INTEGRITY_DAILY_STATS } from "@dummy/verifiedNews";
 import VerifiedNewsImage from "@website/components/VerifiedNewsImage";
 import type {
   NewsCategoryFilter,
   VerifiedNewsArticle,
 } from "@website/types/verifiedNews";
 import {
-  INTEGRITY_DAILY_STATS,
   NEWS_CATEGORY_LABELS,
   NEWS_FILTERS,
   filterVerifiedNews,
@@ -57,31 +61,33 @@ function HeaderStatCard({
   );
 }
 
-function IntegrityFloatingPanel() {
+function IntegrityFloatingPanel({
+  stats,
+}: {
+  stats: typeof INTEGRITY_DAILY_STATS;
+}) {
   const reducedMotion = useReducedMotion();
-  const { value: score } = useCountUp(INTEGRITY_DAILY_STATS.score, {
+  const { value: score } = useCountUp(stats.score, {
     decimals: 1,
     duration: 2200,
     enabled: !reducedMotion,
     startOnMount: true,
   });
-  const { value: change } = useCountUp(INTEGRITY_DAILY_STATS.change, {
+  const { value: change } = useCountUp(stats.change, {
     decimals: 1,
     duration: 2200,
     enabled: !reducedMotion,
     startOnMount: true,
   });
-  const { value: scannedToday } = useCountUp(INTEGRITY_DAILY_STATS.scannedToday, {
+  const { value: scannedToday } = useCountUp(stats.scannedToday, {
     duration: 2200,
     enabled: !reducedMotion,
     startOnMount: true,
   });
 
-  const displayScore = reducedMotion ? INTEGRITY_DAILY_STATS.score : score;
-  const displayChange = reducedMotion ? INTEGRITY_DAILY_STATS.change : change;
-  const displayScanned = reducedMotion
-    ? INTEGRITY_DAILY_STATS.scannedToday
-    : scannedToday;
+  const displayScore = reducedMotion ? stats.score : score;
+  const displayChange = reducedMotion ? stats.change : change;
+  const displayScanned = reducedMotion ? stats.scannedToday : scannedToday;
 
   return (
     <aside
@@ -375,8 +381,11 @@ function FlexibleNewsGrid({ articles }: { articles: VerifiedNewsArticle[] }) {
 
 export default function VerifiedNews() {
   const [activeFilter, setActiveFilter] = useState<NewsCategoryFilter>("all");
+  const { data: listingArticles = getListingArticles() } = useVerifiedNewsListing();
+  const { data: integrityStats = INTEGRITY_DAILY_STATS } =
+    useVerifiedNewsIntegrityStats();
 
-  const filtered = filterVerifiedNews(getListingArticles(), activeFilter);
+  const filtered = filterVerifiedNews(listingArticles, activeFilter);
   const useBento = activeFilter === "all" && isFullBentoLayout(filtered);
 
   return (
@@ -429,12 +438,12 @@ export default function VerifiedNews() {
 
           <EnterItem index={3} className="flex shrink-0 flex-wrap gap-3 lg:flex-col lg:items-stretch">
             <HeaderStatCard
-              target={INTEGRITY_DAILY_STATS.score}
+              target={integrityStats.score}
               label="مؤشر النزاهة اليومي"
               valueClassName="text-primary"
             />
             <HeaderStatCard
-              target={INTEGRITY_DAILY_STATS.change}
+              target={integrityStats.change}
               label="مقارنة بالأمس"
               prefix="+"
               suffix="%"
@@ -491,7 +500,7 @@ export default function VerifiedNews() {
       )}
     </main>
 
-    <IntegrityFloatingPanel />
+    <IntegrityFloatingPanel stats={integrityStats} />
     </>
   );
 }

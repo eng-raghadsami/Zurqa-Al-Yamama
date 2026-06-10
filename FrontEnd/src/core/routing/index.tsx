@@ -10,8 +10,14 @@ const Home = React.lazy(() => import("@website/pages/Home"));
 const InvestigativeReports = React.lazy(
   () => import("@website/pages/InvestigativeReports"),
 );
+const InvestigativeReportDetail = React.lazy(
+  () => import("@website/pages/InvestigativeReportDetail"),
+);
 const HumanitarianStories = React.lazy(
   () => import("@website/pages/HumanitarianStories"),
+);
+const HumanitarianStoryDetail = React.lazy(
+  () => import("@website/pages/HumanitarianStoryDetail"),
 );
 const StoriesLayout = React.lazy(
   () => import("@website/layouts/StoriesLayout"),
@@ -27,10 +33,19 @@ const Podcasts = React.lazy(() => import("@website/pages/Podcasts"));
 const MediaVerificationWizard = React.lazy(
   () => import("@website/pages/MediaVerificationWizard"),
 );
+const VideoVerificationComingSoon = React.lazy(
+  () => import("@website/pages/VideoVerificationComingSoon"),
+);
 const MediaLiteracyLayout = React.lazy(
   () => import("@website/layouts/MediaLiteracyLayout"),
 );
 const MediaLiteracy = React.lazy(() => import("@website/pages/MediaLiteracy"));
+const PlatformAboutLayout = React.lazy(
+  () => import("@website/layouts/PlatformAboutLayout"),
+);
+const PublishingVerificationPolicies = React.lazy(
+  () => import("@website/pages/PublishingVerificationPolicies"),
+);
 const MediaTerminologyLayout = React.lazy(
   () => import("@website/layouts/MediaTerminologyLayout"),
 );
@@ -48,6 +63,39 @@ const MySpaceLayout = React.lazy(
   () => import("@website/layouts/MySpaceLayout"),
 );
 const MySpace = React.lazy(() => import("@website/pages/MySpace"));
+const ContentSetupLayout = React.lazy(
+  () => import("@website/layouts/ContentSetupLayout"),
+);
+const ContentTypeSelection = React.lazy(
+  () => import("@website/pages/contentSetup/ContentTypeSelection"),
+);
+const CoverImageStep = React.lazy(
+  () => import("@website/pages/contentSetup/CoverImageStep"),
+);
+const ContentWriteStep = React.lazy(
+  () => import("@website/pages/contentSetup/ContentWriteStep"),
+);
+const ContentAnalysisStep = React.lazy(
+  () => import("@website/pages/contentSetup/ContentAnalysisStep"),
+);
+const ContentPendingReviewStep = React.lazy(
+  () => import("@website/pages/contentSetup/ContentPendingReviewStep"),
+);
+const IntegrityCertificatesList = React.lazy(
+  () => import("@website/pages/certificates/IntegrityCertificatesList"),
+);
+const IntegrityCertificateDetail = React.lazy(
+  () => import("@website/pages/certificates/IntegrityCertificateDetail"),
+);
+const EditorDashboard = React.lazy(
+  () => import("@website/pages/editor/EditorDashboard"),
+);
+const ExpertReviewQueue = React.lazy(
+  () => import("@website/pages/editor/ExpertReviewQueue"),
+);
+const ExpertContentReviewDetail = React.lazy(
+  () => import("@website/pages/editor/ExpertContentReviewDetail"),
+);
 const EditorLayout = React.lazy(
   () => import("@website/layouts/EditorLayout"),
 );
@@ -102,6 +150,14 @@ export const router = createBrowserRouter([
           </Suspense>
         ),
       },
+      {
+        path: "investigative/:slug",
+        element: (
+          <Suspense>
+            <InvestigativeReportDetail />
+          </Suspense>
+        ),
+      },
     ],
   },
   {
@@ -121,6 +177,14 @@ export const router = createBrowserRouter([
         element: (
           <Suspense>
             <HumanitarianStories />
+          </Suspense>
+        ),
+      },
+      {
+        path: "humanitarian/:slug",
+        element: (
+          <Suspense>
+            <HumanitarianStoryDetail />
           </Suspense>
         ),
       },
@@ -186,7 +250,7 @@ export const router = createBrowserRouter([
         path: "video",
         element: (
           <Suspense>
-            <MediaVerificationWizard mediaType="video" />
+            <VideoVerificationComingSoon />
           </Suspense>
         ),
       },
@@ -205,6 +269,32 @@ export const router = createBrowserRouter([
         element: (
           <Suspense>
             <MediaLiteracy />
+          </Suspense>
+        ),
+      },
+    ],
+  },
+  {
+    path: "/about",
+    element: (
+      <Suspense>
+        <PlatformAboutLayout />
+      </Suspense>
+    ),
+    children: [
+      {
+        index: true,
+        element: <Navigate to="publishing-policies" replace />,
+      },
+      {
+        path: "content-policy",
+        element: <Navigate to="../publishing-policies" replace />,
+      },
+      {
+        path: "publishing-policies",
+        element: (
+          <Suspense>
+            <PublishingVerificationPolicies />
           </Suspense>
         ),
       },
@@ -270,6 +360,77 @@ export const router = createBrowserRouter([
           </Suspense>
         ),
       },
+      {
+        path: "certificates",
+        children: [
+          {
+            index: true,
+            element: (
+              <Suspense>
+                <IntegrityCertificatesList />
+              </Suspense>
+            ),
+          },
+          {
+            path: ":id",
+            element: (
+              <Suspense>
+                <IntegrityCertificateDetail />
+              </Suspense>
+            ),
+          },
+        ],
+      },
+      {
+        path: "content",
+        element: (
+          <Suspense>
+            <ContentSetupLayout />
+          </Suspense>
+        ),
+        children: [
+          {
+            path: "new",
+            element: (
+              <Suspense>
+                <ContentTypeSelection />
+              </Suspense>
+            ),
+          },
+          {
+            path: "cover",
+            element: (
+              <Suspense>
+                <CoverImageStep />
+              </Suspense>
+            ),
+          },
+          {
+            path: "write",
+            element: (
+              <Suspense>
+                <ContentWriteStep />
+              </Suspense>
+            ),
+          },
+          {
+            path: "analysis",
+            element: (
+              <Suspense>
+                <ContentAnalysisStep />
+              </Suspense>
+            ),
+          },
+          {
+            path: "pending",
+            element: (
+              <Suspense>
+                <ContentPendingReviewStep />
+              </Suspense>
+            ),
+          },
+        ],
+      },
     ],
   },
   {
@@ -285,6 +446,30 @@ export const router = createBrowserRouter([
         element: (
           <Suspense>
             <EditorContentReview />
+          </Suspense>
+        ),
+      },
+      {
+        path: "dashboard",
+        element: (
+          <Suspense>
+            <EditorDashboard />
+          </Suspense>
+        ),
+      },
+      {
+        path: "expert-review",
+        element: (
+          <Suspense>
+            <ExpertReviewQueue />
+          </Suspense>
+        ),
+      },
+      {
+        path: "expert-review/:id",
+        element: (
+          <Suspense>
+            <ExpertContentReviewDetail />
           </Suspense>
         ),
       },

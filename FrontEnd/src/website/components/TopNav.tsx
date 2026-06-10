@@ -1,13 +1,18 @@
 import { useEffect, useRef, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { ADMIN_ROUTES, WEBSITE_ROUTES } from "@core/constants/routes";
+import { useAuth } from "@core/context/AuthContext";
 import LibraryNavDropdown, {
   resolveLibraryNavId,
 } from "@website/components/LibraryNavDropdown";
+import PlatformAboutNavDropdown, {
+  resolvePlatformAboutNavId,
+} from "@website/components/PlatformAboutNavDropdown";
 import NotificationsDropdown from "@website/components/NotificationsDropdown";
 import SettingsDropdown from "@website/components/SettingsDropdown";
 import MobileNavDrawer from "@website/components/MobileNavDrawer";
 import { getVerificationCta } from "@website/helpers/verificationNav";
+import VerificationNavMenuItems from "@website/components/VerificationNavMenuItems";
 import {
   SITE_LOGO,
   USER_AVATAR,
@@ -40,6 +45,9 @@ function resolveSearchPlaceholder(pathname: string): string {
   if (pathname.startsWith(WEBSITE_ROUTES.VERIFICATION)) {
     return "ابحث في طلبات التحقق...";
   }
+  if (pathname.startsWith(WEBSITE_ROUTES.ABOUT)) {
+    return "ابحث في سياسات المنصة...";
+  }
   if (pathname.startsWith(WEBSITE_ROUTES.MEDIA_LITERACY)) {
     return "ابحث في دورات المعرفة الإعلامية...";
   }
@@ -60,19 +68,20 @@ export default function TopNav({
   hasSidebar = false,
 }: TopNavProps) {
   const { pathname } = useLocation();
+  const { isLoggedIn, login } = useAuth();
+  const showUserNav = isLoggedIn || variant === "authenticated";
   const [scrolled, setScrolled] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const searchInputRef = useRef<HTMLInputElement>(null);
   const libraryActiveId = resolveLibraryNavId(pathname);
-  const isAuthenticated = variant === "authenticated";
+  const platformAboutActiveId = resolvePlatformAboutNavId(pathname);
   const placeholder = searchPlaceholder ?? resolveSearchPlaceholder(pathname);
 
   const isHome = pathname === WEBSITE_ROUTES.HOME;
   const reportsActive = pathname.startsWith("/reports");
   const storiesActive = pathname.startsWith("/stories");
   const verificationActive = pathname.startsWith(WEBSITE_ROUTES.VERIFICATION);
-  const mediaLiteracyActive = pathname.startsWith(WEBSITE_ROUTES.MEDIA_LITERACY);
   const mySpaceActive = pathname.startsWith(WEBSITE_ROUTES.MY_SPACE);
   const verificationCta = getVerificationCta(pathname);
 
@@ -209,44 +218,28 @@ export default function TopNav({
                 expand_more
               </span>
             </button>
-            <div className="absolute right-0 top-full pt-2 dropdown-menu min-w-[220px]">
-              <div className="bg-surface-container-lowest rounded-lg shadow-xl border border-outline-variant/30 overflow-hidden">
-                <Link
-                  className="block px-4 py-3 text-sm hover:bg-secondary-container/10 hover:text-secondary transition-colors border-b border-outline-variant/10"
-                  to={WEBSITE_ROUTES.VERIFICATION_IMAGE}
-                >
-                  تحقق من الصور
-                </Link>
-                <Link
-                  className="block px-4 py-3 text-sm hover:bg-secondary-container/10 hover:text-secondary transition-colors border-b border-outline-variant/10"
-                  to={WEBSITE_ROUTES.VERIFICATION_VIDEO}
-                >
-                  تحقق من الفيديوهات
-                </Link>
-                <Link
-                  className="block px-4 py-3 text-sm hover:bg-secondary-container/10 hover:text-secondary transition-colors"
-                  to={WEBSITE_ROUTES.EDITOR_DISINFORMATION_ARCHIVE}
-                >
-                  مكافحة التضليل
-                </Link>
+            <div className="absolute right-0 top-full pt-2 dropdown-menu min-w-[240px]">
+              <div className="overflow-hidden rounded-lg border border-outline-variant/30 bg-surface-container-lowest shadow-xl">
+                <VerificationNavMenuItems
+                  isLoggedIn={isLoggedIn}
+                  linkClassName="block px-4 py-3 text-sm transition-colors hover:bg-secondary-container/10 hover:text-secondary"
+                />
               </div>
             </div>
           </div>
-          <Link
-            className={navLinkClass(mediaLiteracyActive)}
-            to={WEBSITE_ROUTES.MEDIA_LITERACY}
-          >
-            المعرفة الإعلامية
-          </Link>
+          <PlatformAboutNavDropdown
+            activeId={platformAboutActiveId}
+            variant="public"
+          />
           <Link className={navLinkClass(mySpaceActive)} to={WEBSITE_ROUTES.MY_SPACE}>
             مساحتي
           </Link>
         </nav>
 
         <div className="flex items-center gap-2 md:gap-4 shrink-0">
-          {isAuthenticated ? (
+          {showUserNav ? (
             <>
-              {showSearch && (
+              {variant === "authenticated" && showSearch && (
                 <button
                   type="button"
                   aria-expanded={searchOpen}
@@ -263,15 +256,17 @@ export default function TopNav({
                   </span>
                 </button>
               )}
-              <Link
-                to={verificationCta.to}
-                className="hidden lg:flex items-center gap-2 px-5 py-2 gold-gradient-bg text-on-primary font-label-bold text-label-bold rounded-lg shadow-md hover:opacity-90 transition-all active:scale-95 whitespace-nowrap"
-              >
-                <span className="material-symbols-outlined text-[18px]">
-                  {verificationCta.icon}
-                </span>
-                {verificationCta.label}
-              </Link>
+              {variant === "authenticated" && (
+                <Link
+                  to={verificationCta.to}
+                  className="hidden lg:flex items-center gap-2 px-5 py-2 gold-gradient-bg text-on-primary font-label-bold text-label-bold rounded-lg shadow-md hover:opacity-90 transition-all active:scale-95 whitespace-nowrap"
+                >
+                  <span className="material-symbols-outlined text-[18px]">
+                    {verificationCta.icon}
+                  </span>
+                  {verificationCta.label}
+                </Link>
+              )}
               <NotificationsDropdown />
               <SettingsDropdown />
               <Link to={WEBSITE_ROUTES.MY_SPACE} aria-label="مساحتي">
@@ -287,6 +282,7 @@ export default function TopNav({
               <button
                 type="button"
                 className="hidden sm:inline-flex px-5 py-2 bg-primary text-on-primary rounded-lg font-label-bold text-label-bold hover:bg-surface-tint transition-all whitespace-nowrap"
+                onClick={login}
               >
                 تسجيل الدخول
               </button>
@@ -306,7 +302,7 @@ export default function TopNav({
         </div>
       </div>
 
-      {isAuthenticated && showSearch && (
+      {variant === "authenticated" && showSearch && (
         <div
           className={`overflow-hidden transition-all duration-300 ease-in-out border-t border-outline-variant/20 bg-surface/95 backdrop-blur-md ${
             searchOpen ? "max-h-20 opacity-100" : "max-h-0 opacity-0 border-t-transparent"
@@ -332,7 +328,7 @@ export default function TopNav({
     {!hasSidebar && (
       <MobileNavDrawer
         open={mobileMenuOpen}
-        variant={variant}
+        variant={showUserNav ? "authenticated" : variant}
         onClose={() => setMobileMenuOpen(false)}
       />
     )}

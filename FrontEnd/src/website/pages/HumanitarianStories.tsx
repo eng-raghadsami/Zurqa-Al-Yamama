@@ -1,53 +1,10 @@
-import { useEffect } from "react";
+import { useEffect, useMemo } from "react";
+import { Link } from "react-router-dom";
+import { WEBSITE_ROUTES } from "@core/constants/routes";
+import { useHumanitarianStories } from "@services";
+import { FEATURED_STORY_SLUG } from "@dummy/humanitarianStories";
 import RevealOnScroll from "@shared/components/RevealOnScroll";
 import { EnterItem, StaggerReveal } from "@shared/components/animations";
-
-const STORY_CARDS = [
-  {
-    tag: "إنساني",
-    integrity: "94%",
-    title: "جسور الأمل: مبادرة شبابية لدعم كبار السن",
-    excerpt:
-      "تعرف على قصة المتطوعين الذين كرسوا وقتهم لكسر عزلة المسنين في المناطق النائية وتوفير الرعاية النفسية اللازمة لهم.",
-    time: "منذ 3 ساعات",
-    image:
-      "https://lh3.googleusercontent.com/aida-public/AB6AXuDgYEQSXOWQqrBt2zXcg8R78pCNP55uOqAOYTuaNSpz53XdjwnYFaDCIxLnZyeSewOTXoQGv5fO8A7kCk_6q2RgiA2LGv61DJ4X5J1viY-e6HJm7abIf208hko3haQ2CkGareB9U8h4WS1MNBCtFaNaBBzFiDR34pz2oqZBB2AZR3LmAhGF_dL5uX94nROTDgE4uGFpVfS5Sy4Mh9H9W7k9fUQiYJgqQjPKAi1lML7FYUsf5Bpzl9YRIwaY-zq2_onBO-cxeeuYM0Wh",
-    alt: "أيدي متعددة تزرع شتلة في التربة",
-  },
-  {
-    tag: "اجتماعي",
-    integrity: "89%",
-    title: "ثورة التعليم الرقمي في القرى المحرومة",
-    excerpt:
-      "كيف ساهمت التكنولوجيا في تقليص الفجوة المعرفية بين المدن والأرياف وتوفير فرص تعليمية متكافئة للجميع.",
-    time: "منذ يوم واحد",
-    image:
-      "https://lh3.googleusercontent.com/aida-public/AB6AXuD2Y6jKNN3n3z4roOpo4cE3shd0IwdioMmlChHq5BrYvkROd5AMVxvT-qjb90fch3GWbo6Z9ptmfYMTfxUVC-PUSbKmUaLDKoovGXu8EPQuP9ww8XNUwbgOF_KnLvmrCVVretSvfGrD1bJjUma2XGCxUJ0f2PxoS-nZj83YydN2s31wE4KPGxENguQx-4RfkTscdPm8O-jWTvbHPVDvI0wFDm3iwCx01hEhBR0Fu-W_GmJpmhYnvDJy6ya-rrxPD1RZne4uks9Y4aNB",
-    alt: "طلاب في فصل دراسي رقمي",
-  },
-  {
-    tag: "نجاح",
-    integrity: "97%",
-    title: "بصمة خضراء: امرأة تقود التغيير البيئي",
-    excerpt:
-      "رحلة كفاح بدأت بفكرة بسيطة لإعادة التدوير وتحولت إلى مشروع قومي يخدم البيئة والمجتمع المحلي.",
-    time: "منذ يومين",
-    image:
-      "https://lh3.googleusercontent.com/aida-public/AB6AXuDWNLEXovI27SgWrDZhbG5m7EmVV2jPAQY6lJ6ve1uCP1nAGNS5VRn3jFNzpdPiMkS5awZL5gpV2RBbJD6Vr84A5Wg69tMmRxj0axeXaIljwWp_3v36mKez1pUzu0hYbBzLkk1fNHvC4Yove1CDOOAGtj_mFfn9R_XPpoIz1_lBa7UGTgQXXqlsr-qs8qDcJ6KKA0hDAgN9wjmNZC2Zl5iw4XP0cv0-u21YS1NxKu6op2TcfMuhlzuEGUhSW8MfihVoHoiaAXkYyrK1",
-    alt: "امرأة تطل على مشروع طاقة متجددة",
-  },
-  {
-    tag: "إنساني",
-    integrity: "92%",
-    title: "إحياء الحرف: حكايات من مشغل النسيج",
-    excerpt:
-      "قصص مجموعة من النساء اللواتي وجدن في النسيج وسيلة للتحرر الاقتصادي والحفاظ على التراث الشعبي.",
-    time: "منذ أسبوع",
-    image:
-      "https://lh3.googleusercontent.com/aida-public/AB6AXuAesPZUFbkzzpAJPd254b7IIQE6NjI8hyYVOoNVeUe0QuWojrwdmSQ6BrwigLUgyFaEh0WLKykm-ZsfzLdc2visdmM-zdI5CbYtgvedY0COKCOqRx9BZbCj4njGBtx-_KSrAxR-9HJkTWC2UcnhnbpvBYTdfYLgrx-28FX0VwYoNgYxddTwwZpulrw--RWzJ273-5nZXfTmZzNtOodFi-fl31rI0MBjUqq0-zIHgkwLtaBxeGj0rBXNWKWQKsOmP21TUoQmq_rPO7Ei",
-    alt: "أدوات نسيج تقليدية",
-  },
-];
 
 const TRENDING_STORIES = [
   {
@@ -73,6 +30,23 @@ const TRENDING_STORIES = [
 const TAGS = ["#مبادرات", "#مجتمع", "#تمكين"];
 
 export default function HumanitarianStories() {
+  const { data: stories = [] } = useHumanitarianStories();
+
+  const storyCards = useMemo(
+    () =>
+      stories.map((story) => ({
+        slug: story.slug,
+        tag: story.tag,
+        integrity: `${story.integrityScore}%`,
+        title: story.title,
+        excerpt: story.excerpt,
+        time: story.relativeTime ?? "حديث",
+        image: story.heroImage,
+        alt: story.heroAlt,
+      })),
+    [stories],
+  );
+
   useEffect(() => {
     document.title = "القصص الإنسانية والاجتماعية - زرقاء اليمامة";
   }, []);
@@ -105,13 +79,13 @@ export default function HumanitarianStories() {
               </p>
             </EnterItem>
             <EnterItem index={3}>
-              <button
-                type="button"
-                className="bg-white text-primary font-label-bold px-8 py-4 rounded-sm flex items-center gap-3 hover:bg-gold-metallic-start hover:text-white transition-all transform hover:-translate-y-1 site-btn-shine"
+              <Link
+                to={WEBSITE_ROUTES.humanitarianStoryDetail(FEATURED_STORY_SLUG)}
+                className="bg-white text-primary font-label-bold px-8 py-4 rounded-sm inline-flex items-center gap-3 hover:bg-gold-metallic-start hover:text-white transition-all transform hover:-translate-y-1 site-btn-shine"
               >
                 اقرأ القصة كاملة
                 <span className="material-symbols-outlined">arrow_back</span>
-              </button>
+              </Link>
             </EnterItem>
           </div>
         </div>
@@ -143,13 +117,14 @@ export default function HumanitarianStories() {
           </RevealOnScroll>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {STORY_CARDS.map((story, index) => (
+            {storyCards.map((story, index) => (
               <StaggerReveal
-                key={story.title}
+                key={story.slug}
                 as="article"
                 index={index}
                 className="group site-card-hover bg-surface-container-lowest rounded-sm overflow-hidden shadow-sm border border-transparent hover:border-gold-metallic-start"
               >
+                <Link to={WEBSITE_ROUTES.humanitarianStoryDetail(story.slug)}>
                 <div className="relative h-56 overflow-hidden">
                   <img
                     alt={story.alt}
@@ -188,10 +163,11 @@ export default function HumanitarianStories() {
                       </span>
                     </div>
                     <span className="material-symbols-outlined text-outline group-hover:text-primary transition-colors">
-                      share
+                      arrow_back
                     </span>
                   </div>
                 </div>
+                </Link>
               </StaggerReveal>
             ))}
           </div>

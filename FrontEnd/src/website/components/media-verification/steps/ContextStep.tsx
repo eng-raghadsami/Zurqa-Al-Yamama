@@ -1,3 +1,5 @@
+import { useEffect } from "react";
+import { useMatchTermsInText } from "@services";
 import { useMediaVerification } from "@website/context/MediaVerificationContext";
 import {
   CONTENT_CATEGORIES,
@@ -9,6 +11,19 @@ const inputClass =
 
 export default function ContextStep() {
   const { form, updateForm } = useMediaVerification();
+  const matchTerms = useMatchTermsInText();
+
+  useEffect(() => {
+    const text = form.contextDetails.trim();
+    if (text.length < 15) return;
+
+    const timer = window.setTimeout(() => {
+      matchTerms.mutate({ text });
+    }, 700);
+
+    return () => window.clearTimeout(timer);
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- debounced match on text only
+  }, [form.contextDetails]);
 
   const toggleCategory = (category: string) => {
     const next = form.categories.includes(category)
@@ -112,6 +127,23 @@ export default function ContextStep() {
             value={form.contextDetails}
             onChange={(e) => updateForm({ contextDetails: e.target.value })}
           />
+          {matchTerms.data && matchTerms.data.length > 0 && (
+            <div className="rounded-lg border border-gold-metallic-start/25 bg-gold-metallic-start/5 p-3">
+              <p className="mb-2 text-xs font-label-bold text-secondary">
+                مصطلحات إعلامية مكتشفة في النص:
+              </p>
+              <div className="flex flex-wrap gap-2">
+                {matchTerms.data.slice(0, 6).map((term) => (
+                  <span
+                    key={term.id}
+                    className="rounded-full bg-white px-3 py-1 text-xs font-label-bold text-primary border border-outline-variant/20"
+                  >
+                    {term.word}
+                  </span>
+                ))}
+              </div>
+            </div>
+          )}
         </div>
 
         <div className="space-y-4">

@@ -1,7 +1,12 @@
 import { Link } from "react-router-dom";
 import { WEBSITE_ROUTES } from "@core/constants/routes";
 
-export type LibraryNavId = "visuals" | "podcasts" | "terminology" | "verified-news";
+export type LibraryNavId =
+  | "visuals"
+  | "podcasts"
+  | "terminology"
+  | "verified-news"
+  | "media-literacy";
 
 export const LIBRARY_NAV_ITEMS: {
   id: LibraryNavId;
@@ -18,6 +23,11 @@ export const LIBRARY_NAV_ITEMS: {
   { id: "visuals", label: "المرئيات", to: WEBSITE_ROUTES.VISUALS },
   { id: "podcasts", label: "البودكاست", to: WEBSITE_ROUTES.PODCASTS },
   { id: "terminology", label: "المصطلحات", to: WEBSITE_ROUTES.MEDIA_TERMINOLOGY },
+  {
+    id: "media-literacy",
+    label: "المعرفة الإعلامية",
+    to: WEBSITE_ROUTES.MEDIA_LITERACY,
+  },
 ];
 
 export function LibraryNavItemLabel({
@@ -45,6 +55,7 @@ export function resolveLibraryNavId(pathname: string): LibraryNavId | undefined 
   if (pathname.startsWith(WEBSITE_ROUTES.VISUALS)) return "visuals";
   if (pathname.startsWith(WEBSITE_ROUTES.PODCASTS)) return "podcasts";
   if (pathname.startsWith(WEBSITE_ROUTES.MEDIA_TERMINOLOGY)) return "terminology";
+  if (pathname.startsWith(WEBSITE_ROUTES.MEDIA_LITERACY)) return "media-literacy";
   return undefined;
 }
 

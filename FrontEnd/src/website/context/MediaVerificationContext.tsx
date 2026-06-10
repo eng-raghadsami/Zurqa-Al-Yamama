@@ -6,6 +6,7 @@ import {
   useState,
   type ReactNode,
 } from "react";
+import type { ImageAnalysisResult } from "@website/types/contentAnalysis";
 import {
   INITIAL_VERIFICATION_FORM,
   type MediaVerificationFormData,
@@ -17,12 +18,14 @@ type MediaVerificationContextValue = {
   step: number;
   trackingId: string | null;
   form: MediaVerificationFormData;
+  analysisResult: ImageAnalysisResult | null;
+  analysisError: string | null;
   setForm: React.Dispatch<React.SetStateAction<MediaVerificationFormData>>;
   updateForm: (patch: Partial<MediaVerificationFormData>) => void;
   goNext: () => void;
   goPrev: () => void;
   goToStep: (step: number) => void;
-  submit: () => void;
+  completeSubmission: (result: ImageAnalysisResult | null, error?: string | null) => void;
   reset: () => void;
   isSubmitted: boolean;
 };
@@ -50,6 +53,8 @@ export function MediaVerificationProvider({
   );
   const [trackingId, setTrackingId] = useState<string | null>(null);
   const [isSubmitted, setIsSubmitted] = useState(false);
+  const [analysisResult, setAnalysisResult] = useState<ImageAnalysisResult | null>(null);
+  const [analysisError, setAnalysisError] = useState<string | null>(null);
 
   const updateForm = useCallback((patch: Partial<MediaVerificationFormData>) => {
     setForm((prev) => ({ ...prev, ...patch }));
@@ -67,10 +72,15 @@ export function MediaVerificationProvider({
     setStep(Math.min(Math.max(target, 1), 4));
   }, []);
 
-  const submit = useCallback(() => {
-    setTrackingId(generateTrackingId());
-    setIsSubmitted(true);
-  }, []);
+  const completeSubmission = useCallback(
+    (result: ImageAnalysisResult | null, error: string | null = null) => {
+      setAnalysisResult(result);
+      setAnalysisError(error);
+      setTrackingId(generateTrackingId());
+      setIsSubmitted(true);
+    },
+    [],
+  );
 
   const reset = useCallback(() => {
     setForm((prev) => {
@@ -80,6 +90,8 @@ export function MediaVerificationProvider({
     setStep(1);
     setTrackingId(null);
     setIsSubmitted(false);
+    setAnalysisResult(null);
+    setAnalysisError(null);
   }, []);
 
   const value = useMemo(
@@ -88,12 +100,14 @@ export function MediaVerificationProvider({
       step,
       trackingId,
       form,
+      analysisResult,
+      analysisError,
       setForm,
       updateForm,
       goNext,
       goPrev,
       goToStep,
-      submit,
+      completeSubmission,
       reset,
       isSubmitted,
     }),
@@ -102,11 +116,13 @@ export function MediaVerificationProvider({
       step,
       trackingId,
       form,
+      analysisResult,
+      analysisError,
       updateForm,
       goNext,
       goPrev,
       goToStep,
-      submit,
+      completeSubmission,
       reset,
       isSubmitted,
     ],

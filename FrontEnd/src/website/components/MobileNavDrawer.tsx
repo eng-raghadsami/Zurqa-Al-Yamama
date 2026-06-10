@@ -1,8 +1,11 @@
 import { useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { WEBSITE_ROUTES } from "@core/constants/routes";
+import { useAuth } from "@core/context/AuthContext";
 import { LIBRARY_NAV_ITEMS, LibraryNavItemLabel } from "@website/components/LibraryNavDropdown";
+import { PLATFORM_ABOUT_NAV_ITEMS } from "@website/components/PlatformAboutNavDropdown";
 import { getVerificationCta } from "@website/helpers/verificationNav";
+import { getVerificationMenuItems } from "@website/helpers/verificationMenuItems";
 
 type MobileNavDrawerProps = {
   open: boolean;
@@ -19,6 +22,8 @@ export default function MobileNavDrawer({
   variant = "public",
 }: MobileNavDrawerProps) {
   const { pathname } = useLocation();
+  const { isLoggedIn, login } = useAuth();
+  const verificationMenuItems = getVerificationMenuItems(isLoggedIn);
   const verificationCta = getVerificationCta(pathname);
 
   useEffect(() => {
@@ -106,38 +111,47 @@ export default function MobileNavDrawer({
           ))}
 
           <p className="px-4 pt-4 pb-2 text-xs font-label-bold text-outline">التحقق الإعلامي</p>
-          <Link
-            className={`${sectionClass} ${activeClass(pathname.startsWith(WEBSITE_ROUTES.VERIFICATION))}`}
-            to={WEBSITE_ROUTES.VERIFICATION_IMAGE}
-            onClick={onClose}
-          >
-            تحقق من الصور
-          </Link>
-          <Link
-            className={sectionClass}
-            to={WEBSITE_ROUTES.VERIFICATION_VIDEO}
-            onClick={onClose}
-          >
-            تحقق من الفيديوهات
-          </Link>
+          {verificationMenuItems.map((item) => (
+            <Link
+              key={item.id}
+              className={`${sectionClass} ${activeClass(pathname.startsWith(item.to))}`}
+              to={item.to}
+              onClick={onClose}
+            >
+              <span className="flex items-center justify-between gap-2">
+                <span>{item.label}</span>
+                {item.comingSoon && (
+                  <span className="rounded-full bg-secondary-container/40 px-2 py-0.5 text-[10px] font-label-bold text-primary">
+                    قريباً
+                  </span>
+                )}
+              </span>
+            </Link>
+          ))}
+
+          <p className="px-4 pt-4 pb-2 text-xs font-label-bold text-outline">عن المنصة</p>
+          {PLATFORM_ABOUT_NAV_ITEMS.map((item) =>
+            item.comingSoon ? (
+              <span
+                key={item.id}
+                className={`${sectionClass} text-outline cursor-not-allowed`}
+              >
+                {item.label} (قريبًا)
+              </span>
+            ) : (
+              <Link
+                key={item.id}
+                className={`${sectionClass} ${activeClass(pathname.startsWith(item.to))}`}
+                to={item.to}
+                onClick={onClose}
+              >
+                <LibraryNavItemLabel label={item.label} featured={item.featured} />
+              </Link>
+            ),
+          )}
 
           <Link
-            className={sectionClass}
-            to={WEBSITE_ROUTES.EDITOR_DISINFORMATION_ARCHIVE}
-            onClick={onClose}
-          >
-            أرشيف التضليل
-          </Link>
-
-          <Link
-            className={`${sectionClass} mt-2 ${activeClass(pathname.startsWith(WEBSITE_ROUTES.MEDIA_LITERACY))}`}
-            to={WEBSITE_ROUTES.MEDIA_LITERACY}
-            onClick={onClose}
-          >
-            المعرفة الإعلامية
-          </Link>
-          <Link
-            className={`${sectionClass} ${activeClass(pathname.startsWith(WEBSITE_ROUTES.MY_SPACE))}`}
+            className={`${sectionClass} mt-2 ${activeClass(pathname.startsWith(WEBSITE_ROUTES.MY_SPACE))}`}
             to={WEBSITE_ROUTES.MY_SPACE}
             onClick={onClose}
           >
@@ -158,7 +172,10 @@ export default function MobileNavDrawer({
             <button
               type="button"
               className="w-full py-3 bg-primary text-on-primary font-label-bold rounded-lg"
-              onClick={onClose}
+              onClick={() => {
+                login();
+                onClose();
+              }}
             >
               تسجيل الدخول
             </button>

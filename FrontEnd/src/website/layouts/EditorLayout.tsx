@@ -9,9 +9,11 @@ import { EDITOR_NAV_AVATAR } from "@website/constants/brand";
 export default function EditorLayout() {
   const { pathname } = useLocation();
   const isContentReview = pathname === WEBSITE_ROUTES.EDITOR_SPACE;
+  const isExpertReview = pathname.startsWith(WEBSITE_ROUTES.EDITOR_EXPERT_REVIEW);
   const isArchive = pathname.startsWith(
     WEBSITE_ROUTES.EDITOR_DISINFORMATION_ARCHIVE,
   );
+  const needsTallFooter = isContentReview || isExpertReview;
 
   return (
     <div
@@ -29,7 +31,7 @@ export default function EditorLayout() {
       <EditorSidebar belowTopNav />
       <main
         className={`lg:mr-80 pt-24 md:pt-28 px-4 md:px-margin-desktop ${
-          isContentReview ? "pb-36 lg:pb-32" : "pb-24 lg:pb-12"
+          needsTallFooter ? "pb-36 lg:pb-32" : "pb-24 lg:pb-12"
         }`}
       >
         <PageEnter>
