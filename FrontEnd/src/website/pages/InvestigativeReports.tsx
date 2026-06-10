@@ -1,6 +1,7 @@
 import { useEffect, useState, type RefObject } from "react";
 import { Link } from "react-router-dom";
 import { WEBSITE_ROUTES } from "@core/constants/routes";
+import { useInvestigativeReports } from "@services";
 import { useCountUp } from "@core/hooks/useCountUp";
 import { useReducedMotion } from "@core/hooks/useReducedMotion";
 import RevealOnScroll from "@shared/components/RevealOnScroll";
@@ -69,7 +70,9 @@ function IntegrityMeter() {
   );
 }
 
-export default function InvestigativeReports() {  const [activeFilter, setActiveFilter] =
+export default function InvestigativeReports() {
+  const { data: reports = [] } = useInvestigativeReports();
+  const [activeFilter, setActiveFilter] =
     useState<(typeof FILTERS)[number]>("الكل");
 
   useEffect(() => {
@@ -165,13 +168,15 @@ export default function InvestigativeReports() {  const [activeFilter, setActive
                       <span className="text-sm">د. أحمد سلامة</span>
                     </div>
                   </div>
-                  <button
-                    type="button"
+                  <Link
+                    to={WEBSITE_ROUTES.investigativeReportDetail(
+                      reports[0]?.slug ?? "shadow-networks-disinformation",
+                    )}
                     className="flex items-center gap-2 text-primary font-label-bold hover:gap-4 transition-all site-btn-shine"
                   >
                     اقرأ التقرير الكامل
                     <span className="material-symbols-outlined">arrow_back</span>
-                  </button>
+                  </Link>
                 </div>
               </div>
             </StaggerReveal>
@@ -226,13 +231,15 @@ export default function InvestigativeReports() {  const [activeFilter, setActive
                       <span className="text-sm">ليلى المنصور</span>
                     </div>
                   </div>
-                  <button
-                    type="button"
+                  <Link
+                    to={WEBSITE_ROUTES.investigativeReportDetail(
+                      reports[1]?.slug ?? "algorithm-manipulation",
+                    )}
                     className="flex items-center gap-2 text-primary font-label-bold hover:gap-4 transition-all site-btn-shine"
                   >
                     اقرأ التقرير الكامل
                     <span className="material-symbols-outlined">arrow_back</span>
-                  </button>
+                  </Link>
                 </div>
               </div>
             </StaggerReveal>

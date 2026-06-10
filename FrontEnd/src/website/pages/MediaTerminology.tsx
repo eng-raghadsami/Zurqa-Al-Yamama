@@ -1,7 +1,14 @@
 import { useMemo, useState } from "react";
 import type { GlossaryTerm } from "@website/types/terminology";
+import { useAuth } from "@core/context/AuthContext";
 import RevealOnScroll from "@shared/components/RevealOnScroll";
 import { EnterItem, StaggerReveal } from "@shared/components/animations";
+import {
+  useCreateMediaTerm,
+  useDeleteMediaTerm,
+  useMediaTerms,
+  useUpdateMediaTerm,
+} from "@services";
 import {
   ARABIC_ALPHABET,
   FEATURED_TERM,
@@ -9,13 +16,41 @@ import {
   filterGlossaryTerms,
 } from "@website/types/terminology";
 
-function TermCard({ term, index }: { term: GlossaryTerm; index: number }) {
+type TermCardProps = {
+  term: GlossaryTerm;
+  index: number;
+  canManage: boolean;
+  onEdit: (term: GlossaryTerm) => void;
+  onDelete: (term: GlossaryTerm) => void;
+};
+
+function TermCard({ term, index, canManage, onEdit, onDelete }: TermCardProps) {
   return (
     <StaggerReveal
       index={index}
       as="article"
-      className="glass-panel p-6 rounded-2xl shadow-sm border border-outline-variant/10 site-card-hover group transition-all duration-300 flex flex-col h-full"
+      className="glass-panel p-6 rounded-2xl shadow-sm border border-outline-variant/10 site-card-hover group transition-all duration-300 flex flex-col h-full relative"
     >
+      {canManage && (
+        <div className="absolute top-4 left-4 flex gap-1 z-10">
+          <button
+            type="button"
+            aria-label={`تعديل ${term.title}`}
+            className="p-1.5 rounded-lg bg-surface-container-lowest/90 border border-outline-variant/20 text-primary hover:bg-primary hover:text-on-primary transition-colors"
+            onClick={() => onEdit(term)}
+          >
+            <span className="material-symbols-outlined text-[18px]">edit</span>
+          </button>
+          <button
+            type="button"
+            aria-label={`حذف ${term.title}`}
+            className="p-1.5 rounded-lg bg-surface-container-lowest/90 border border-error/30 text-error hover:bg-error hover:text-white transition-colors"
+            onClick={() => onDelete(term)}
+          >
+            <span className="material-symbols-outlined text-[18px]">delete</span>
+          </button>
+        </div>
+      )}
       <div className="flex justify-between items-start mb-4">
         <span className="px-3 py-1 bg-secondary-container/30 text-secondary font-label-bold text-label-bold rounded-full text-xs">
           {term.category}
@@ -25,7 +60,9 @@ function TermCard({ term, index }: { term: GlossaryTerm; index: number }) {
         </span>
       </div>
       <h2 className="font-headline-sm text-headline-sm mb-1">{term.title}</h2>
-      <p className="text-outline font-body-md mb-4 italic text-sm">{term.english}</p>
+      {term.english && (
+        <p className="text-outline font-body-md mb-4 italic text-sm">{term.english}</p>
+      )}
       <p className="text-on-surface-variant font-body-md mb-6 line-clamp-3 flex-1">
         {term.description}
       </p>
@@ -45,22 +82,120 @@ export default function MediaTerminology() {
   const [query, setQuery] = useState("");
   const [activeLetter, setActiveLetter] = useState<string | null>(null);
   const [searchFocused, setSearchFocused] = useState(false);
+  const [showSuggestForm, setShowSuggestForm] = useState(false);
+  const [suggestWord, setSuggestWord] = useState("");
+  const [suggestMeaning, setSuggestMeaning] = useState("");
+  const [suggestCategory, setSuggestCategory] = useState("مصطلحات الأخبار");
+  const [suggestMessage, setSuggestMessage] = useState<string | null>(null);
+  const [editingTerm, setEditingTerm] = useState<GlossaryTerm | null>(null);
+  const [editWord, setEditWord] = useState("");
+  const [editMeaning, setEditMeaning] = useState("");
+  const [editCategory, setEditCategory] = useState("");
+  const [termActionMessage, setTermActionMessage] = useState<string | null>(null);
+
+  const { canManageTerms } = useAuth();
+  const { data: apiTerms, isLoading, isFetching } = useMediaTerms();
+  const createTerm = useCreateMediaTerm();
+  const updateTerm = useUpdateMediaTerm();
+  const deleteTerm = useDeleteMediaTerm();
+
+  const allTerms = apiTerms ?? GLOSSARY_TERMS;
 
   const filteredTerms = useMemo(
-    () => filterGlossaryTerms(GLOSSARY_TERMS, query, activeLetter),
-    [query, activeLetter],
+    () => filterGlossaryTerms(allTerms, query, activeLetter),
+    [allTerms, query, activeLetter],
   );
 
   const showFeatured =
     !activeLetter &&
     !query.trim() &&
-    filteredTerms.length === GLOSSARY_TERMS.length;
+    filteredTerms.length === allTerms.length;
+
+  const handleSuggestTerm = async () => {
+    if (!suggestWord.trim() || !suggestMeaning.trim()) return;
+
+    try {
+      await createTerm.mutateAsync({
+        word: suggestWord.trim(),
+        meaning: suggestMeaning.trim(),
+        category: suggestCategory,
+        is_active: true,
+      });
+      setSuggestMessage("تم إرسال المصطلح بنجاح.");
+      setSuggestWord("");
+      setSuggestMeaning("");
+      setShowSuggestForm(false);
+    } catch {
+      setSuggestMessage("تعذّر إرسال المصطلح. حاول مرة أخرى.");
+    }
+  };
+
+  const parseApiTermId = (id: string): number | null => {
+    const num = Number(id);
+    return Number.isInteger(num) && num > 0 ? num : null;
+  };
+
+  const openEditTerm = (term: GlossaryTerm) => {
+    setEditingTerm(term);
+    setEditWord(term.title);
+    setEditMeaning(term.description);
+    setEditCategory(term.category);
+    setTermActionMessage(null);
+  };
+
+  const handleUpdateTerm = async () => {
+    if (!editingTerm || !editWord.trim() || !editMeaning.trim()) return;
+    const apiId = parseApiTermId(editingTerm.id);
+    if (!apiId) {
+      setTermActionMessage("تعديل المصطلحات المحلية غير متاح — المصطلحات من الخادم فقط.");
+      return;
+    }
+    try {
+      await updateTerm.mutateAsync({
+        id: apiId,
+        payload: {
+          word: editWord.trim(),
+          meaning: editMeaning.trim(),
+          category: editCategory.trim() || editingTerm.category,
+        },
+      });
+      setTermActionMessage("تم تحديث المصطلح.");
+      setEditingTerm(null);
+    } catch {
+      setTermActionMessage("تعذّر تحديث المصطلح.");
+    }
+  };
+
+  const handleDeleteTerm = async (term: GlossaryTerm) => {
+    const apiId = parseApiTermId(term.id);
+    if (!apiId) {
+      window.alert("حذف المصطلحات المحلية غير متاح — المصطلحات من الخادم فقط.");
+      return;
+    }
+    if (!window.confirm(`حذف المصطلح «${term.title}»؟`)) return;
+    try {
+      await deleteTerm.mutateAsync(apiId);
+      setTermActionMessage("تم حذف المصطلح.");
+    } catch {
+      setTermActionMessage("تعذّر حذف المصطلح.");
+    }
+  };
 
   return (
     <main className="space-y-10">
       {/* Hero + Search */}
       <section className="rounded-2xl glass-panel border border-outline-variant/10 overflow-hidden">
         <div className="px-6 py-10 md:px-12 md:py-14 text-center max-w-3xl mx-auto site-hero-overlay-enter">
+          {(isLoading || isFetching) && (
+            <p className="mb-4 text-xs font-label-bold text-gold-metallic-start">
+              جاري تحميل المصطلحات من الخادم...
+            </p>
+          )}
+          {canManageTerms && (
+            <p className="mb-4 text-xs font-label-bold text-secondary">
+              وضع المحرر/المدير مفعّل — يمكنك تعديل أو حذف المصطلحات
+            </p>
+          )}
           <EnterItem index={0}>
             <p className="inline-flex items-center gap-2 bg-gold-metallic-start/10 text-gold-metallic-start px-4 py-1 rounded-full mb-5 border border-gold-metallic-start/20 font-label-bold text-xs">
               <span className="material-symbols-outlined text-[16px]">menu_book</span>
@@ -206,10 +341,21 @@ export default function MediaTerminology() {
           </div>
         </RevealOnScroll>
 
+        {termActionMessage && (
+          <p className="mb-4 text-sm font-label-bold text-success-teal">{termActionMessage}</p>
+        )}
+
         {filteredTerms.length > 0 ? (
           <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-gutter">
             {filteredTerms.map((term, i) => (
-              <TermCard key={term.id} index={i} term={term} />
+              <TermCard
+                key={term.id}
+                index={i}
+                term={term}
+                canManage={canManageTerms}
+                onEdit={openEditTerm}
+                onDelete={handleDeleteTerm}
+              />
             ))}
           </div>
         ) : (
@@ -250,14 +396,111 @@ export default function MediaTerminology() {
           <p className="text-on-surface-variant mb-6 max-w-lg mx-auto">
             ساهم في إثراء المحتوى المعرفي للمنصة من خلال اقتراح مصطلحات جديدة.
           </p>
-          <button
-            type="button"
-            className="px-8 py-3 bg-primary text-on-primary rounded-xl font-bold hover:scale-105 transition-transform site-btn-shine"
-          >
-            اقترح مصطلحاً جديداً
-          </button>
+          {suggestMessage && (
+            <p className="mb-4 text-sm font-label-bold text-success-teal">{suggestMessage}</p>
+          )}
+          {showSuggestForm ? (
+            <div className="mx-auto mb-4 max-w-md space-y-3 text-right">
+              <input
+                className="w-full rounded-lg border border-outline-variant/30 px-4 py-2"
+                placeholder="المصطلح"
+                value={suggestWord}
+                onChange={(e) => setSuggestWord(e.target.value)}
+              />
+              <textarea
+                className="w-full rounded-lg border border-outline-variant/30 px-4 py-2"
+                placeholder="المعنى"
+                rows={3}
+                value={suggestMeaning}
+                onChange={(e) => setSuggestMeaning(e.target.value)}
+              />
+              <input
+                className="w-full rounded-lg border border-outline-variant/30 px-4 py-2"
+                placeholder="التصنيف"
+                value={suggestCategory}
+                onChange={(e) => setSuggestCategory(e.target.value)}
+              />
+              <div className="flex flex-wrap justify-center gap-2">
+                <button
+                  type="button"
+                  disabled={createTerm.isPending}
+                  className="rounded-xl bg-primary px-6 py-2 font-bold text-on-primary disabled:opacity-60"
+                  onClick={handleSuggestTerm}
+                >
+                  {createTerm.isPending ? "جاري الإرسال..." : "إرسال المصطلح"}
+                </button>
+                <button
+                  type="button"
+                  className="rounded-xl border border-primary px-6 py-2 font-bold text-primary"
+                  onClick={() => setShowSuggestForm(false)}
+                >
+                  إلغاء
+                </button>
+              </div>
+            </div>
+          ) : (
+            <button
+              type="button"
+              className="px-8 py-3 bg-primary text-on-primary rounded-xl font-bold hover:scale-105 transition-transform site-btn-shine"
+              onClick={() => {
+                setSuggestMessage(null);
+                setShowSuggestForm(true);
+              }}
+            >
+              اقترح مصطلحاً جديداً
+            </button>
+          )}
         </section>
       </RevealOnScroll>
+
+      {editingTerm && (
+        <div className="fixed inset-0 z-[70] flex items-center justify-center p-4 bg-primary/40 backdrop-blur-sm">
+          <div
+            className="w-full max-w-md rounded-2xl bg-surface-container-lowest border border-outline-variant/20 shadow-2xl p-6"
+            role="dialog"
+            aria-labelledby="edit-term-title"
+          >
+            <h3 id="edit-term-title" className="font-headline-sm text-primary mb-4">
+              تعديل المصطلح
+            </h3>
+            <div className="space-y-3">
+              <input
+                className="w-full rounded-lg border border-outline-variant/30 px-4 py-2"
+                value={editWord}
+                onChange={(e) => setEditWord(e.target.value)}
+              />
+              <textarea
+                className="w-full rounded-lg border border-outline-variant/30 px-4 py-2"
+                rows={3}
+                value={editMeaning}
+                onChange={(e) => setEditMeaning(e.target.value)}
+              />
+              <input
+                className="w-full rounded-lg border border-outline-variant/30 px-4 py-2"
+                value={editCategory}
+                onChange={(e) => setEditCategory(e.target.value)}
+              />
+            </div>
+            <div className="mt-4 flex gap-2 justify-end">
+              <button
+                type="button"
+                className="rounded-lg border border-primary px-4 py-2 font-label-bold text-primary"
+                onClick={() => setEditingTerm(null)}
+              >
+                إلغاء
+              </button>
+              <button
+                type="button"
+                disabled={updateTerm.isPending}
+                className="rounded-lg bg-primary px-4 py-2 font-label-bold text-on-primary disabled:opacity-60"
+                onClick={handleUpdateTerm}
+              >
+                {updateTerm.isPending ? "جاري الحفظ..." : "حفظ"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </main>
   );
 }

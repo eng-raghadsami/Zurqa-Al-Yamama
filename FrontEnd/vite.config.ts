@@ -13,6 +13,8 @@ export default defineConfig({
       '@shared': path.resolve(__dirname, './src/shared'),
       '@website': path.resolve(__dirname, './src/website'),
       '@admin': path.resolve(__dirname, './src/admin'),
+      '@services': path.resolve(__dirname, './src/Services'),
+      '@dummy': path.resolve(__dirname, './src/dummy'),
     },
   },
 })

@@ -1,3 +1,8 @@
+import {
+  DEFAULT_PREVIEW_IMAGE as DEFAULT_PREVIEW_IMAGE_DUMMY,
+  REVIEW_PREVIEW_IMAGE as REVIEW_PREVIEW_IMAGE_DUMMY,
+} from "@dummy/mediaVerification";
+
 export type MediaVerificationType = "image" | "video";
 
 export type MediaVerificationFormData = {
@@ -59,8 +64,5 @@ export const DECEPTION_TYPES = [
   { value: "impersonation", label: "انتحال شخصية" },
 ] as const;
 
-export const DEFAULT_PREVIEW_IMAGE =
-  "https://lh3.googleusercontent.com/aida-public/AB6AXuBiT6q18F9H2l79fWehuoew-RrRANHUFK-hoCI5TEwUR1PY-yxsm_HBxKIho53Uk1wEcaB3dUGKxVoSeoRb9FYMbctTNshgyIoPpd8DvaCe2_lRooayd1ND9qsKwZe4XGdephyU6Xpz6oW3jdK6X5iWXzZ7065ScCf3ZtZAALsFfm6NUcSuuPCu6l5GqVBbkWoq58gaJhwHXYm7tjN0TS9LmgSErl-TTPEUBkKD3hEAwkB7_-Ynde0gtX2EeCxInSHZjeGcX47irn8t";
-
-export const REVIEW_PREVIEW_IMAGE =
-  "https://lh3.googleusercontent.com/aida-public/AB6AXuCVz19AqJZkdrrenhDcSKj2Jmp8hWF7tYzGFrxSHjwGDbr94uLob9-hGf7aE7bn7NBr97AWWMkyKihud5j1EmF6VQk8Qj6Vr2eXB67lHENVvQBT823GE--bKdikykM35AY--LJApWlaSzqI41iAAudULBzsb5NC7LqgksT2gR0G1ULINHrM4H6k6JGi-2mUkp5CSaF6zhLUn9se_kzoUizTKfOC_DH5xg96ni_m1EPLZ-anGn1ZRDrHsR3WUW-En8vrMN9kPQY7d8EM";
+export const DEFAULT_PREVIEW_IMAGE = DEFAULT_PREVIEW_IMAGE_DUMMY;
+export const REVIEW_PREVIEW_IMAGE = REVIEW_PREVIEW_IMAGE_DUMMY;

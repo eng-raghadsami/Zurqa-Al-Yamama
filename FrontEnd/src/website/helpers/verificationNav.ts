@@ -12,7 +12,7 @@ export function getVerificationCta(pathname: string) {
   if (pathname.startsWith(WEBSITE_ROUTES.VERIFICATION_VIDEO)) {
     return {
       to: WEBSITE_ROUTES.VERIFICATION_IMAGE,
-      label: "التحقق من الصور",
+      label: "تحقق من الصور الآن",
       icon: "image" as const,
     };
   }

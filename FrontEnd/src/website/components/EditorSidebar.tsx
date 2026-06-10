@@ -19,9 +19,17 @@ const navItems: NavItem[] = [
   {
     label: "لوحة التحكم",
     icon: "dashboard",
-    href: PLACEHOLDER_ROUTE,
-    match: "/editor-space/dashboard",
-    external: true,
+    href: WEBSITE_ROUTES.EDITOR_DASHBOARD,
+    match: WEBSITE_ROUTES.EDITOR_DASHBOARD,
+    exact: true,
+    filled: true,
+  },
+  {
+    label: "مراجعة الخبراء",
+    icon: "rate_review",
+    href: WEBSITE_ROUTES.EDITOR_EXPERT_REVIEW,
+    match: WEBSITE_ROUTES.EDITOR_EXPERT_REVIEW,
+    filled: true,
   },
   {
     label: "التحقق من المحتوى",

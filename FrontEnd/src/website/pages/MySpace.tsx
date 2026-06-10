@@ -1,6 +1,9 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { WEBSITE_ROUTES } from "@core/constants/routes";
+import { useIntegrityCertificates } from "@services";
+import { useAuth } from "@core/context/AuthContext";
+import { canAccessContentSetup } from "@website/helpers/contentSetupAccess";
 import { MY_SPACE_PROFILE_AVATAR } from "@website/constants/brand";
 import AnimatedStatNumber, {
   AnimatedCircularProgress,
@@ -130,6 +133,9 @@ function CompletedVerificationCard({ request }: { request: VerificationRequest }
 }
 
 export default function MySpace() {
+  const { data: certificates = [] } = useIntegrityCertificates();
+  const auth = useAuth();
+  const showContentSetup = canAccessContentSetup(auth);
   const [libraryFilter, setLibraryFilter] = useState<LibraryItemType>("all");
 
   const filteredLibrary =
@@ -251,9 +257,72 @@ export default function MySpace() {
         </div>
       </RevealOnScroll>
 
+      {showContentSetup && (
+        <RevealOnScroll as="section" className="mb-12">
+          <div className="glass-panel rounded-2xl border border-gold-metallic-start/20 p-6 md:p-8 flex flex-col md:flex-row md:items-center md:justify-between gap-6">
+            <div className="flex items-start gap-4">
+              <div className="w-14 h-14 rounded-xl bg-gold-metallic-start/15 flex items-center justify-center shrink-0">
+                <span className="material-symbols-outlined text-gold-metallic-start text-3xl">
+                  post_add
+                </span>
+              </div>
+              <div>
+                <h2 className="font-headline-sm text-headline-sm text-primary mb-1">
+                  إعداد محتوى جديد
+                </h2>
+                <p className="text-sm text-on-surface-variant leading-relaxed max-w-xl">
+                  ابدأ مسودة تقرير أو قصة أو خبر موثّق. يخضع المحتوى لسياسات النشر والتحقق
+                  وتحليل الذكاء الاصطناعي قبل المراجعة.
+                </p>
+                {auth.activeModeLabel && (
+                  <p className="text-xs text-secondary font-label-bold mt-2">
+                    الوضع النشط: {auth.activeModeLabel}
+                  </p>
+                )}
+              </div>
+            </div>
+            <Link
+              to={WEBSITE_ROUTES.CONTENT_SETUP_NEW}
+              className="inline-flex items-center justify-center gap-2 px-8 py-3 rounded-lg font-label-bold bg-primary text-on-primary hover:bg-gold-metallic-start transition-colors shadow-md shrink-0"
+            >
+              <span className="material-symbols-outlined text-[20px]">edit_square</span>
+              ابدأ الآن
+            </Link>
+          </div>
+        </RevealOnScroll>
+      )}
+
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-gutter">
         {/* العمود الرئيسي */}
         <div className="lg:col-span-8 space-y-12">
+          {canAccessContentSetup(auth) && (
+            <RevealOnScroll as="section">
+              <div className="flex justify-between items-center mb-6">
+                <h2 className="font-headline-sm text-primary site-section-title site-section-title-visible">
+                  شهادات النزاهة
+                </h2>
+                <Link
+                  to={WEBSITE_ROUTES.MY_SPACE_CERTIFICATES}
+                  className="text-gold-metallic-start font-label-bold text-sm hover:underline"
+                >
+                  عرض الكل ({certificates.length})
+                </Link>
+              </div>
+              <div className="glass-panel rounded-2xl border border-gold-metallic-start/20 p-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                <p className="text-sm text-on-surface-variant">
+                  شهادات رقمية تُصدر تلقائياً عند اعتماد محتواك من فريق الخبراء.
+                </p>
+                <Link
+                  to={WEBSITE_ROUTES.MY_SPACE_CERTIFICATES}
+                  className="inline-flex items-center gap-2 px-6 py-2.5 rounded-lg font-label-bold border border-primary text-primary hover:bg-primary hover:text-on-primary transition-colors shrink-0"
+                >
+                  <span className="material-symbols-outlined text-[18px]">workspace_premium</span>
+                  شهاداتي
+                </Link>
+              </div>
+            </RevealOnScroll>
+          )}
+
           <RevealOnScroll as="section">
             <div className="flex justify-between items-center mb-8">
               <h2 className="font-headline-sm text-primary site-section-title site-section-title-visible">

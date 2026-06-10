@@ -1,0 +1,307 @@
+{
+    "openapi": "3.0.0",
+    "info": {
+        "title": "Zurqa Al-Yamama API",
+        "description": "API Documentation",
+        "version": "1.0.0"
+    },
+    "servers": [
+        {
+            "url": "https://zurqa-al-yamama.onrender.com",
+            "description": "Production Server"
+        }
+    ],
+    "paths": {
+        "/api/images/analyze": {
+            "post": {
+                "tags": [
+                    "Images"
+                ],
+                "summary": "Analyze an uploaded image",
+                "operationId": "0f83a75a8d1dfbb660ebdbdd28598834",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "multipart/form-data": {
+                            "schema": {
+                                "properties": {
+                                    "image": {
+                                        "type": "string",
+                                        "format": "binary"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Successful analysis",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "racism": { "type": "integer" },
+                                        "violence": { "type": "integer" },
+                                        "sensitive_content": { "type": "integer" },
+                                        "blood": { "type": "integer" },
+                                        "ai_generated": { "type": "boolean" },
+                                        "forged": { "type": "boolean" },
+                                        "ai_generated_percentage": { "type": "integer" },
+                                        "forged_percentage": { "type": "integer" },
+                                        "description": { "type": "string" },
+                                        "actions": {
+                                            "type": "array",
+                                            "items": { "type": "string" }
+                                        },
+                                        "criteria_scores": { "type": "object" },
+                                        "errors": { "type": "object" },
+                                        "blurred_image_url": {
+                                            "type": "string",
+                                            "nullable": true
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation error"
+                    }
+                }
+            }
+        },
+        "/api/terms": {
+            "get": {
+                "tags": [
+                    "Terms"
+                ],
+                "summary": "Get all media terms",
+                "operationId": "738fc98f4c919c742ab3280b8f378616",
+                "responses": {
+                    "200": {
+                        "description": "List of terms"
+                    }
+                }
+            },
+            "post": {
+                "tags": [
+                    "Terms"
+                ],
+                "summary": "Create a media term",
+                "operationId": "9f08143164ba4f23caffa7edd937d10d",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "word",
+                                    "meaning"
+                                ],
+                                "properties": {
+                                    "word": {
+                                        "type": "string",
+                                        "example": "مصدر مطلع"
+                                    },
+                                    "meaning": {
+                                        "type": "string",
+                                        "example": "تعبير يستخدم للإشارة إلى شخص لديه معلومات عن الموضوع دون ذكر اسمه."
+                                    },
+                                    "category": {
+                                        "type": "string",
+                                        "example": "مصطلحات الأخبار"
+                                    },
+                                    "is_active": {
+                                        "type": "boolean",
+                                        "example": true
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Term created successfully"
+                    }
+                }
+            }
+        },
+        "/api/terms/{id}": {
+            "get": {
+                "tags": [
+                    "Terms"
+                ],
+                "summary": "Get a single media term",
+                "operationId": "a7dadaea9acd0789825d922dc7096d1a",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Term details"
+                    }
+                }
+            },
+            "put": {
+                "tags": [
+                    "Terms"
+                ],
+                "summary": "Update a media term",
+                "operationId": "2b43e4afae55816b48a0b9c64c31fb96",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "word": {
+                                        "type": "string",
+                                        "example": "مصدر رسمي"
+                                    },
+                                    "meaning": {
+                                        "type": "string",
+                                        "example": "جهة أو شخص مخول بالتصريح باسم مؤسسة أو حكومة."
+                                    },
+                                    "category": {
+                                        "type": "string",
+                                        "example": "مصطلحات الأخبار"
+                                    },
+                                    "is_active": {
+                                        "type": "boolean",
+                                        "example": true
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Term updated successfully"
+                    }
+                }
+            },
+            "delete": {
+                "tags": [
+                    "Terms"
+                ],
+                "summary": "Delete a media term",
+                "operationId": "c54eb69f166863bfc8d5fb1e68957051",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Term deleted successfully"
+                    }
+                }
+            }
+        },
+        "/api/terms/match": {
+            "post": {
+                "tags": [
+                    "Terms"
+                ],
+                "summary": "Find media terms used in a text",
+                "operationId": "aa4b390632013abeb19ac93faa6c909f",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "text"
+                                ],
+                                "properties": {
+                                    "text": {
+                                        "type": "string",
+                                        "example": "نقلت وسائل الإعلام عن مصدر مطلع تفاصيل الخبر العاجل."
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Matched terms"
+                    }
+                }
+            }
+        },
+        "/api/texts/analyze": {
+            "post": {
+                "tags": [
+                    "Texts"
+                ],
+                "summary": "Analyze plain text",
+                "operationId": "a011f6a3324c874af2a5dd9ac8df3fec",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "text": {
+                                        "type": "string"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Analysis result"
+                    }
+                }
+            }
+        }
+    },
+    "tags": [
+        {
+            "name": "Images",
+            "description": "Images"
+        },
+        {
+            "name": "Terms",
+            "description": "Terms"
+        },
+        {
+            "name": "Texts",
+            "description": "Texts"
+        }
+    ]
+}

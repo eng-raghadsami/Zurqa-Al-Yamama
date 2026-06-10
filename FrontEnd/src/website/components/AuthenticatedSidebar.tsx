@@ -1,7 +1,9 @@
 import { Link, useLocation } from "react-router-dom";
 import { PLACEHOLDER_ROUTE, WEBSITE_ROUTES } from "@core/constants/routes";
+import { useAuth } from "@core/context/AuthContext";
 import { SIDEBAR_LOGO } from "@website/constants/brand";
 import { getVerificationCta } from "@website/helpers/verificationNav";
+import { canAccessContentSetup } from "@website/helpers/contentSetupAccess";
 
 const navItems = [
   {
@@ -33,7 +35,10 @@ const navItems = [
 
 export default function AuthenticatedSidebar() {
   const { pathname } = useLocation();
+  const auth = useAuth();
   const verificationCta = getVerificationCta(pathname);
+  const showContentSetup = canAccessContentSetup(auth);
+  const contentSetupActive = pathname.startsWith(`${WEBSITE_ROUTES.MY_SPACE}/content`);
 
   const isActive = (match: string) => match !== "" && pathname.startsWith(match);
 
@@ -83,6 +88,49 @@ export default function AuthenticatedSidebar() {
             </Link>
           );
         })}
+
+        {showContentSetup && (
+          <>
+          <Link
+            className={`mt-3 flex flex-row-reverse items-center gap-3 rounded-lg px-4 py-3 transition-all ${
+              contentSetupActive
+                ? "border-r-4 border-gold-metallic-start bg-gold-metallic-start/10 font-bold text-primary"
+                : "text-on-surface-variant hover:bg-mist-grey/50 hover:text-primary"
+            }`}
+            to={WEBSITE_ROUTES.CONTENT_SETUP_NEW}
+          >
+            <span
+              className="material-symbols-outlined text-[22px]"
+              style={
+                contentSetupActive ? { fontVariationSettings: "'FILL' 1" } : undefined
+              }
+            >
+              post_add
+            </span>
+            <span className="font-label-bold text-label-bold">إعداد محتوى جديد</span>
+          </Link>
+          <Link
+            className={`flex flex-row-reverse items-center gap-3 rounded-lg px-4 py-3 transition-all ${
+              pathname.startsWith(WEBSITE_ROUTES.MY_SPACE_CERTIFICATES)
+                ? "border-r-4 border-gold-metallic-start bg-gold-metallic-start/10 font-bold text-primary"
+                : "text-on-surface-variant hover:bg-mist-grey/50 hover:text-primary"
+            }`}
+            to={WEBSITE_ROUTES.MY_SPACE_CERTIFICATES}
+          >
+            <span
+              className="material-symbols-outlined text-[22px]"
+              style={
+                pathname.startsWith(WEBSITE_ROUTES.MY_SPACE_CERTIFICATES)
+                  ? { fontVariationSettings: "'FILL' 1" }
+                  : undefined
+              }
+            >
+              workspace_premium
+            </span>
+            <span className="font-label-bold text-label-bold">شهادات النزاهة</span>
+          </Link>
+          </>
+        )}
       </nav>
 
       <div className="mt-auto shrink-0 space-y-2 border-t border-mist-grey/40 p-4">

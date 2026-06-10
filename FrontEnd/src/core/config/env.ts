@@ -4,7 +4,9 @@ export interface AppEnv {
 }
 
 export const env = {
-  apiBaseUrl: import.meta.env.VITE_API_BASE_URL ?? "",
+  apiBaseUrl:
+    import.meta.env.VITE_API_BASE_URL ??
+    "https://zurqa-al-yamama.onrender.com",
   isProd: import.meta.env.PROD,
   isDev: import.meta.env.DEV,
 } as const;

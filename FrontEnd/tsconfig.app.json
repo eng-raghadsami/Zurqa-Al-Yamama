@@ -29,7 +29,11 @@
       "@core/*": ["src/core/*"],
       "@shared/*": ["src/shared/*"],
       "@website/*": ["src/website/*"],
-      "@admin/*": ["src/admin/*"]
+      "@admin/*": ["src/admin/*"],
+      "@services": ["src/Services/index.ts"],
+      "@services/*": ["src/Services/*"],
+      "@dummy": ["src/dummy/index.ts"],
+      "@dummy/*": ["src/dummy/*"]
     }
   },
   "include": ["src"]

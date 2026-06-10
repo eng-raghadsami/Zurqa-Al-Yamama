@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { WEBSITE_ROUTES } from "@core/constants/routes";
+import { listPendingSubmissions } from "@website/helpers/contentSubmissionsStore";
 import { useCountUp } from "@core/hooks/useCountUp";
 import AnimatedStatNumber, {
   AnimatedStatProgress,
@@ -389,6 +390,7 @@ function ArchiveItemRow({ item }: { item: AdminArchiveItem }) {
 }
 
 export default function AdminDashboard() {
+  const pendingReviews = listPendingSubmissions().length;
   const [chartPeriod, setChartPeriod] = useState<"monthly" | "yearly">("monthly");
   const [policies, setPolicies] = useState<Record<string, boolean>>(() =>
     Object.fromEntries(ADMIN_POLICIES.map((p) => [p.id, p.enabled])),
@@ -415,6 +417,28 @@ export default function AdminDashboard() {
             {ADMIN_PAGE.description}
           </p>
         </header>
+      </RevealOnScroll>
+
+      <RevealOnScroll direction="up" className="mb-8 relative z-10">
+        <div className="bg-surface-container-lowest rounded-xl border border-gold-metallic-start/20 p-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+          <div>
+            <h3 className="font-headline-sm text-headline-sm text-primary mb-1">
+              مراجعة الخبراء — مساهمات المحتوى
+            </h3>
+            <p className="text-sm text-on-surface-variant">
+              {pendingReviews > 0
+                ? `${pendingReviews} مساهمة بانتظار الاعتماد قبل النشر.`
+                : "لا توجد مساهمات معلقة حالياً."}
+            </p>
+          </div>
+          <Link
+            to={WEBSITE_ROUTES.EDITOR_EXPERT_REVIEW}
+            className="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-lg font-label-bold bg-primary text-on-primary hover:bg-gold-metallic-start transition-colors shrink-0"
+          >
+            <span className="material-symbols-outlined text-[20px]">rate_review</span>
+            فتح واجهة المراجعة
+          </Link>
+        </div>
       </RevealOnScroll>
 
       <section className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-gutter mb-section-gap relative z-10">
