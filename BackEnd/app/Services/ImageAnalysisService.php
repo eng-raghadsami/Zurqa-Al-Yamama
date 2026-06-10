@@ -116,6 +116,8 @@ PROMPT;
                 $results['description'] = $parsed['description'] ?? null;
             }
         } catch (Throwable $e) {
+            // لا نرمي Exception لكي ما يكون عندنا 500 في كل مرة.
+            // بدلاً من ذلك نُرجع الخطأ داخل JSON.
             $results['errors']['gemini'] = $e->getMessage();
         }
     }
@@ -197,7 +199,6 @@ PROMPT;
         }
     }
 
-    // ✅ 修复: 归一化 — 如果分数在 0-1 范围，自动转为 0-100
     private function normalizeScores(array $scores): array
     {
         $normalized = [];
